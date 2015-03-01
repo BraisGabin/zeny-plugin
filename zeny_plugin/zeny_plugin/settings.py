@@ -47,6 +47,8 @@ REST_FRAMEWORK = {
     )
 }
 
+AUTH_USER_MODEL = 'plugin.User'
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

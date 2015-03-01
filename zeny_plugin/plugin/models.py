@@ -1,8 +1,11 @@
-from __future__ import unicode_literals
-
+from django.contrib.auth.signals import user_logged_in
 from django.db import models
+from django.contrib.auth.models import BaseUserManager, update_last_login
+from django.utils.crypto import salted_hmac
 from .managers import StorageManager
 
+#  FIXME This is really ugly
+user_logged_in.disconnect(update_last_login)
 
 class Char(models.Model):
     char_id = models.IntegerField(primary_key=True)
@@ -79,9 +82,9 @@ class Ipbanlist(models.Model):
         db_table = 'ipbanlist'
 
 
-class Login(models.Model):
+class User(models.Model):
     account_id = models.IntegerField(primary_key=True)
-    userid = models.CharField(max_length=23)
+    userid = models.CharField(max_length=23, unique=True)
     user_pass = models.CharField(max_length=32)
     sex = models.CharField(max_length=1)
     email = models.CharField(max_length=39)
@@ -100,9 +103,83 @@ class Login(models.Model):
     vip_time = models.IntegerField()
     old_group = models.IntegerField()
 
+    last_login = None
+    is_active = True
+
+    objects = BaseUserManager()
+
+    USERNAME_FIELD = 'userid'
+
     class Meta:
         managed = False
         db_table = 'login'
+
+    def set_password(self, raw_password):
+        self.user_pass = raw_password
+
+    def check_password(self, raw_password):
+        return self.user_pass == raw_password
+
+    REQUIRED_FIELDS = []
+
+    def get_username(self):
+        """Return the identifying username for this User"""
+        return self.userid
+
+    def __str__(self):
+        return self.get_username()
+
+    def natural_key(self):
+        return (self.get_username(),)
+
+    def is_anonymous(self):
+        """
+        Always returns False. This is a way of comparing User objects to
+        anonymous users.
+        """
+        return False
+
+    def is_authenticated(self):
+        """
+        Always return True. This is a way to tell if the user has been
+        authenticated in templates.
+        """
+        return True
+
+    def set_unusable_password(self):
+        raise NotImplementedError('Not supported')
+
+    def has_usable_password(self):
+        raise NotImplementedError('Not supported')
+
+    def get_full_name(self):
+        raise NotImplementedError('Not supported')
+
+    def get_short_name(self):
+        raise NotImplementedError('Not supported')
+
+    def get_session_auth_hash(self):
+        """
+        Returns an HMAC of the password field.
+        """
+        key_salt = "django.contrib.auth.models.AbstractBaseUser.get_session_auth_hash"
+        return salted_hmac(key_salt, self.user_pass).hexdigest()
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_staff(self):
+        "Is the user a member of staff?"
+        # Simplest possible answer: No, always
+        return False
 
 
 class Storage(models.Model):
