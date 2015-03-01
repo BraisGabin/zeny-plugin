@@ -38,7 +38,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'plugin',
+    'oauth2_provider',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    )
+}
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
