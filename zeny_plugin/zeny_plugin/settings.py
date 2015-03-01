@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'tc0hw4dx6fpk3zgfnd0s5yc4_dw#q6y@4%f+&t^=206n56!wyi'
+SECRET_KEY = 'thisIsNotAReallySecureSecretKeythisIsNotAReallySec' # Redefined in settings_local
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -58,10 +58,13 @@ WSGI_APPLICATION = 'zeny_plugin.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
+DATABASES = { # Redefined in settings_local
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': ''
     }
 }
 
@@ -83,3 +86,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+try:
+    from .settings_local import *
+except ImportError:
+    pass
