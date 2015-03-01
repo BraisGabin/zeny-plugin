@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'plugin',
+    'app',
     'oauth2_provider',
 )
 
@@ -47,7 +47,7 @@ REST_FRAMEWORK = {
     )
 }
 
-AUTH_USER_MODEL = 'plugin.User'
+AUTH_USER_MODEL = 'app.User'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
