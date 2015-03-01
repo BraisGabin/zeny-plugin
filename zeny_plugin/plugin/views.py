@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework import generics
+from .models import Storage
+from .serializers import StorageSerializer
 
-# Create your views here.
+
+class StorageList(generics.ListAPIView):
+    queryset = Storage.objects.all()
+    serializer_class = StorageSerializer
