@@ -8,8 +8,8 @@ from .managers import StorageManager
 user_logged_in.disconnect(update_last_login)
 
 class Char(models.Model):
-    char_id = models.IntegerField(primary_key=True)
-    account_id = models.IntegerField()
+    char_id = models.PositiveIntegerField(primary_key=True)
+    account_id = models.PositiveIntegerField()
     char_num = models.IntegerField()
     name = models.CharField(unique=True, max_length=30)
     class_field = models.IntegerField(db_column='class')  # Field renamed because it was a Python reserved word.
@@ -72,7 +72,7 @@ class Char(models.Model):
 
 
 class User(models.Model):
-    account_id = models.IntegerField(primary_key=True)
+    account_id = models.PositiveIntegerField(primary_key=True)
     userid = models.CharField(max_length=23, unique=True)
     user_pass = models.CharField(max_length=32)
     sex = models.CharField(max_length=1)
@@ -172,8 +172,8 @@ class User(models.Model):
 
 
 class Storage(models.Model):
-    id = models.IntegerField(primary_key=True)
-    account_id = models.IntegerField()
+    id = models.PositiveIntegerField(primary_key=True)
+    account_id = models.PositiveIntegerField()
     nameid = models.IntegerField()
     amount = models.IntegerField()
     equip = models.IntegerField()
