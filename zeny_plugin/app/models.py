@@ -71,17 +71,6 @@ class Char(models.Model):
         db_table = 'char'
 
 
-class Ipbanlist(models.Model):
-    list = models.CharField(max_length=255)
-    btime = models.DateTimeField()
-    rtime = models.DateTimeField()
-    reason = models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'ipbanlist'
-
-
 class User(models.Model):
     account_id = models.IntegerField(primary_key=True)
     userid = models.CharField(max_length=23, unique=True)
