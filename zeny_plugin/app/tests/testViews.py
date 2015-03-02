@@ -1,5 +1,5 @@
 import json
-from .models import User
+from ..models import User
 from django.test import TestCase
 from oauth2_provider.models import Application
 
