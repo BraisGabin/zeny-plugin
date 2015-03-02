@@ -110,7 +110,7 @@ class User(models.Model):
 
 class Char(models.Model):
     char_id = models.PositiveIntegerField(primary_key=True)
-    account_id = models.PositiveIntegerField()
+    account = models.ForeignKey(User, related_name="chars", db_column="account_id")
     char_num = models.IntegerField()
     name = models.CharField(unique=True, max_length=30)
     class_field = models.IntegerField(db_column='class')  # Field renamed because it was a Python reserved word.
@@ -174,7 +174,7 @@ class Char(models.Model):
 
 class Storage(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
-    account_id = models.PositiveIntegerField()
+    account = models.ForeignKey(User, related_name="storage", db_column="account_id")
     nameid = models.IntegerField()
     amount = models.IntegerField()
     equip = models.IntegerField()
