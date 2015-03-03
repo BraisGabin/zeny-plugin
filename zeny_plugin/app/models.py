@@ -194,3 +194,28 @@ class Storage(models.Model):
     class Meta:
         managed = False
         db_table = 'storage'
+
+
+class Vending(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)
+    account = models.ForeignKey(User, related_name="vending", db_column="account_id")
+    nameid = models.IntegerField()
+    amount = models.IntegerField()
+    equip = models.IntegerField()
+    identify = models.IntegerField()
+    refine = models.IntegerField()
+    attribute = models.IntegerField()
+    card0 = models.IntegerField()
+    card1 = models.IntegerField()
+    card2 = models.IntegerField()
+    card3 = models.IntegerField()
+    expire_time = models.IntegerField()
+    bound = models.IntegerField()
+    unique_id = models.BigIntegerField()
+    zeny = models.IntegerField(default=0)
+
+    objects = StorageManager()
+
+    class Meta:
+        managed = False
+        db_table = 'storage_vending'

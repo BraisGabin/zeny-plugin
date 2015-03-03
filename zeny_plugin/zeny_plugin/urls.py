@@ -6,6 +6,7 @@ urlpatterns = patterns(
     '',
     url(r'^user/(?P<pk>[0-9]+|me)/$', views.UserDetail.as_view(), name='user-detail'),
     url(r'^user/(?P<pk>[0-9]+|me)/storage/$', views.StorageList.as_view(), name='storage-list'),
+    url(r'^user/(?P<pk>[0-9]+|me)/vending/$', views.VendingList.as_view(), name='vending-list'),
     url(r'^oauth/authorize/$', oauth_views.AuthorizationView.as_view(template_name='authorize.html'), name="authorize"),
     url(r'^oauth/token/$', oauth_views.TokenView.as_view(), name="token"),
     url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),

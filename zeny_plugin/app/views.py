@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Storage
-from .serializers import UserSerializer, StorageSerializer
+from .models import User, Storage, Vending
+from .serializers import UserSerializer, StorageSerializer, VendingSerializer
 
 
 class UserDetail(generics.RetrieveAPIView):
@@ -31,3 +31,17 @@ class StorageList(generics.ListAPIView):
             raise PermissionDenied()
         self.queryset = Storage.objects.filter(account_id=pk)
         return super(StorageList, self).get(request, *args, **kwargs)
+
+
+class VendingList(generics.ListAPIView):
+    serializer_class = VendingSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        if pk == 'me':
+            pk = self.request.user.pk
+        elif self.request.user.pk != int(pk):
+            raise PermissionDenied()
+        self.queryset = Vending.objects.filter(account_id=pk)
+        return super(VendingList, self).get(request, *args, **kwargs)

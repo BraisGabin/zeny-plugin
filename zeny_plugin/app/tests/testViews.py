@@ -39,30 +39,30 @@ class UserSecurityAccess(TestCase):
                                                         client_type="public", authorization_grant_type="password",
                                                         client_secret="bar")
 
-    @data('', 'storage/',)
+    @data('', 'storage/', 'vending/', )
     def test_get_200_me(self, value):
         login(self, "s1", "p1", self.oauth2_client)
         response = self.client.get('/user/me/' + value)
         self.assertEqual(response.status_code, 200)
 
-    @data('', 'storage/',)
+    @data('', 'storage/', 'vending/', )
     def test_get_200_pk(self, value):
         login(self, "s1", "p1", self.oauth2_client)
         response = self.client.get('/user/1/' + value)
         self.assertEqual(response.status_code, 200)
 
-    @data('', 'storage/',)
+    @data('', 'storage/', 'vending/', )
     def test_get_403(self, value):
         login(self, "s1", "p1", self.oauth2_client)
         response = self.client.get('/user/2/' + value)
         self.assertEqual(response.status_code, 403)
 
-    @data('', 'storage/',)
+    @data('', 'storage/', 'vending/', )
     def test_get_401_me(self, value):
         response = self.client.get('/user/me/' + value)
         self.assertEqual(response.status_code, 401)
 
-    @data('', 'storage/',)
+    @data('', 'storage/', 'vending/', )
     def test_get_401_pk(self, value):
         response = self.client.get('/user/1/' + value)
         self.assertEqual(response.status_code, 401)

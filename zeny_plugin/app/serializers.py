@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Char, Storage
+from .models import User, Char, Storage, Vending
 
 
 class CharSerializer(serializers.ModelSerializer):
@@ -20,3 +20,9 @@ class StorageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Storage
         fields = ('nameid', 'amount', 'refine', 'attribute', 'card0', 'card1', 'card2', 'card3',)
+
+
+class VendingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vending
+        fields = ('nameid', 'amount', 'refine', 'attribute', 'card0', 'card1', 'card2', 'card3', 'zeny')
