@@ -29,6 +29,38 @@ def logout(test):
     test.client.credentials('HTTP_AUTHORIZATION')
 
 
+class UserList(TestCase):
+    fixtures = ['user.json']
+
+    def setUp(self):
+        self.oauth2_client = Application.objects.create(client_id="foo", user=User.objects.get(pk=1), name="test",
+                                                        client_type="public", authorization_grant_type="password",
+                                                        client_secret="bar")
+
+    def test_get_200_me(self):
+        login(self, "s1", "p1", self.oauth2_client)
+        response = self.client.get('/user/me/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_200_pk(self):
+        login(self, "s1", "p1", self.oauth2_client)
+        response = self.client.get('/user/1/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_403(self):
+        login(self, "s1", "p1", self.oauth2_client)
+        response = self.client.get('/user/2/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_401_me(self):
+        response = self.client.get('/user/me/')
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_401_pk(self):
+        response = self.client.get('/user/1/')
+        self.assertEqual(response.status_code, 401)
+
+
 class StorageList(TestCase):
     fixtures = ['user.json']
 

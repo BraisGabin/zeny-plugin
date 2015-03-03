@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Storage
+from .models import User, Storage
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('account_id', 'userid',)
 
 
 class StorageSerializer(serializers.ModelSerializer):
