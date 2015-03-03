@@ -1,4 +1,5 @@
 import json
+from ddt import ddt, data
 from ..models import User
 from django.test import TestCase
 from oauth2_provider.models import Application
@@ -29,7 +30,8 @@ def logout(test):
     test.client.credentials('HTTP_AUTHORIZATION')
 
 
-class UserList(TestCase):
+@ddt
+class UserSecurityAccess(TestCase):
     fixtures = ['user.json']
 
     def setUp(self):
@@ -37,57 +39,31 @@ class UserList(TestCase):
                                                         client_type="public", authorization_grant_type="password",
                                                         client_secret="bar")
 
-    def test_get_200_me(self):
+    @data('', 'storage/',)
+    def test_get_200_me(self, value):
         login(self, "s1", "p1", self.oauth2_client)
-        response = self.client.get('/user/me/')
+        response = self.client.get('/user/me/' + value)
         self.assertEqual(response.status_code, 200)
 
-    def test_get_200_pk(self):
+    @data('', 'storage/',)
+    def test_get_200_pk(self, value):
         login(self, "s1", "p1", self.oauth2_client)
-        response = self.client.get('/user/1/')
+        response = self.client.get('/user/1/' + value)
         self.assertEqual(response.status_code, 200)
 
-    def test_get_403(self):
+    @data('', 'storage/',)
+    def test_get_403(self, value):
         login(self, "s1", "p1", self.oauth2_client)
-        response = self.client.get('/user/2/')
+        response = self.client.get('/user/2/' + value)
         self.assertEqual(response.status_code, 403)
 
-    def test_get_401_me(self):
-        response = self.client.get('/user/me/')
+    @data('', 'storage/',)
+    def test_get_401_me(self, value):
+        response = self.client.get('/user/me/' + value)
         self.assertEqual(response.status_code, 401)
 
-    def test_get_401_pk(self):
-        response = self.client.get('/user/1/')
+    @data('', 'storage/',)
+    def test_get_401_pk(self, value):
+        response = self.client.get('/user/1/' + value)
         self.assertEqual(response.status_code, 401)
 
-
-class StorageList(TestCase):
-    fixtures = ['user.json']
-
-    def setUp(self):
-        self.oauth2_client = Application.objects.create(client_id="foo", user=User.objects.get(pk=1), name="test",
-                                                        client_type="public", authorization_grant_type="password",
-                                                        client_secret="bar")
-
-    def test_get_200_me(self):
-        login(self, "s1", "p1", self.oauth2_client)
-        response = self.client.get('/user/me/storage/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_200_pk(self):
-        login(self, "s1", "p1", self.oauth2_client)
-        response = self.client.get('/user/1/storage/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_403(self):
-        login(self, "s1", "p1", self.oauth2_client)
-        response = self.client.get('/user/2/storage/')
-        self.assertEqual(response.status_code, 403)
-
-    def test_get_401_me(self):
-        response = self.client.get('/user/me/storage/')
-        self.assertEqual(response.status_code, 401)
-
-    def test_get_401_pk(self):
-        response = self.client.get('/user/1/storage/')
-        self.assertEqual(response.status_code, 401)
