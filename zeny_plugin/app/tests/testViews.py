@@ -153,6 +153,38 @@ class Vending(TestCase):
         response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
         self.assertEqual(response.status_code, 400)
 
+    def test_post_zero_amount(self):
+        items = [
+            {
+                "nameid": 501,
+                "amount": 0,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self, "s1", "p1", self.oauth2_client)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_post_negative_amount(self):
+        items = [
+            {
+                "nameid": 501,
+                "amount": -1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self, "s1", "p1", self.oauth2_client)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 400)
+
     def test_post_ok(self):
         items = [
             {

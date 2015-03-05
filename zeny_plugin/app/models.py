@@ -1,11 +1,19 @@
 from django.contrib.auth.signals import user_logged_in
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, update_last_login
 from django.utils.crypto import salted_hmac
+
 from .managers import StorageManager
 
-#  FIXME This is really ugly
+
+# FIXME This is really ugly
 user_logged_in.disconnect(update_last_login)
+
+
+def strictly_positive(value):
+    if value <= 0:
+        raise ValidationError('%s is not strictly positive' % value)
 
 
 class User(models.Model):
@@ -176,7 +184,7 @@ class Storage(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
     account = models.ForeignKey(User, related_name="storage", db_column="account_id")
     nameid = models.IntegerField()
-    amount = models.IntegerField()
+    amount = models.PositiveIntegerField(validators=[strictly_positive])
     equip = models.IntegerField()
     identify = models.IntegerField()
     refine = models.IntegerField()
@@ -200,7 +208,7 @@ class Vending(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
     account = models.ForeignKey(User, related_name="vending", db_column="account_id")
     nameid = models.IntegerField()
-    amount = models.IntegerField()
+    amount = models.PositiveIntegerField(validators=[strictly_positive])
     equip = models.IntegerField()
     identify = models.IntegerField()
     refine = models.IntegerField()
