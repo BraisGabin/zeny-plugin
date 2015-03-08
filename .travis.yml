@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.7"
+
+env:
+  - DJANGO_SETTINGS_MODULE=zeny_plugin.settings_travis
+
+# command to install dependencies
+install:
+  - "pip install -r zeny_plugin/requirements.txt"
+
+# command to run tests
+script:
+  - cd zeny_plugin
+  - python manage.py test
