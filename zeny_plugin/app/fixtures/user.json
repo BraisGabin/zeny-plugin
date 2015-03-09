@@ -22,18 +22,5 @@
     },
     "model": "app.user",
     "pk": 1
-  },
-  {
-    "fields": {
-      "redirect_uris": "",
-      "name": "foo",
-      "client_type": "public",
-      "user": 1,
-      "client_id": "foo",
-      "client_secret": "bar",
-      "authorization_grant_type": "password"
-    },
-    "model": "oauth2_provider.application",
-    "pk": 1
   }
 ]

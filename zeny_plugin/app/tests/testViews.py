@@ -26,14 +26,12 @@ def create_oauth2_header(test, username, password, client_id):
     return '%s %s' % (token_type, token)
 
 
-def login(test, username="s1", password="p1", oauth2_client_id="foo"):
-    header = create_oauth2_header(test, username, password, oauth2_client_id)
-    test.client.defaults['HTTP_AUTHORIZATION'] = header
+def login(client, userid="s1"):
+    client.force_authenticate(User.objects.get(userid=userid))
 
 
-def logout(test):
-    test.client.defaults.pop()
-    test.client.credentials('HTTP_AUTHORIZATION')
+def logout(client):
+    client.force_authenticate(None)
 
 
 @ddt
@@ -42,19 +40,19 @@ class UserSecurityAccess(APITestCase):
 
     @data('', 'storage/', 'vending/', )
     def test_get_200_me(self, value):
-        login(self)
+        login(self.client)
         response = self.client.get('/user/me/' + value)
         self.assertEqual(response.status_code, 200)
 
     @data('', 'storage/', 'vending/', )
     def test_get_200_pk(self, value):
-        login(self)
+        login(self.client)
         response = self.client.get('/user/1/' + value)
         self.assertEqual(response.status_code, 200)
 
     @data('', 'storage/', 'vending/', )
     def test_get_403(self, value):
-        login(self)
+        login(self.client)
         response = self.client.get('/user/2/' + value)
         self.assertEqual(response.status_code, 403)
 
@@ -70,19 +68,19 @@ class UserSecurityAccess(APITestCase):
 
     @data('vending/', )
     def test_post_400_me(self, value):
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/' + value)
         self.assertEqual(response.status_code, 400)
 
     @data('vending/', )
     def test_post_400_pk(self, value):
-        login(self)
+        login(self.client)
         response = self.client.post('/user/1/' + value)
         self.assertEqual(response.status_code, 400)
 
     @data('vending/', )
     def test_post_403(self, value):
-        login(self)
+        login(self.client)
         response = self.client.post('/user/2/' + value)
         self.assertEqual(response.status_code, 403)
 
@@ -101,7 +99,7 @@ class VendingNoLock(APITestCase):
     fixtures = ['user.json', 'items.json']
 
     def test_post_empty(self):
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', None, "json")
         self.assertEqual(response.status_code, 400)
 
@@ -126,7 +124,7 @@ class VendingNoLock(APITestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
@@ -142,7 +140,7 @@ class VendingNoLock(APITestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
@@ -158,7 +156,7 @@ class VendingNoLock(APITestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
@@ -174,7 +172,7 @@ class VendingNoLock(APITestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
@@ -190,7 +188,7 @@ class VendingNoLock(APITestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
@@ -210,7 +208,7 @@ class Vending(MyTransactionTestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
@@ -234,7 +232,7 @@ class Vending(MyTransactionTestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
@@ -258,7 +256,7 @@ class Vending(MyTransactionTestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
@@ -282,7 +280,7 @@ class Vending(MyTransactionTestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
@@ -306,7 +304,7 @@ class Vending(MyTransactionTestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
@@ -330,7 +328,7 @@ class Vending(MyTransactionTestCase):
                 "card2": 0,
                 "card3": 0,
             }, ]
-        login(self)
+        login(self.client)
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
