@@ -1,7 +1,7 @@
-from django.test.testcases import TransactionTestCase
+from rest_framework.test import APITransactionTestCase
 
 
-class MyTransactionTestCase(TransactionTestCase):
+class MyTransactionTestCase(APITransactionTestCase):
     def _fixture_teardown(self):
         super(MyTransactionTestCase, self)._fixture_teardown()
         for db_name in self._databases_names(include_mirrors=False):

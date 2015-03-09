@@ -4,7 +4,7 @@ import unittest
 from ddt import ddt, data
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
-from django.test import TestCase
+from rest_framework.test import APITestCase
 
 from ..models import User
 from .. import views
@@ -37,7 +37,7 @@ def logout(test):
 
 
 @ddt
-class UserSecurityAccess(TestCase):
+class UserSecurityAccess(APITestCase):
     fixtures = ['user.json']
 
     @data('', 'storage/', 'vending/', )
@@ -97,12 +97,12 @@ class UserSecurityAccess(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
-class VendingNoLock(TestCase):
+class VendingNoLock(APITestCase):
     fixtures = ['user.json', 'items.json']
 
     def test_post_empty(self):
         login(self)
-        response = self.client.post('/user/me/vending/', '', "application/json")
+        response = self.client.post('/user/me/vending/', None, "json")
         self.assertEqual(response.status_code, 400)
 
     def test_post_repeat_item(self):
@@ -127,7 +127,7 @@ class VendingNoLock(TestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
     def test_post_dont_have(self):
@@ -143,7 +143,7 @@ class VendingNoLock(TestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
     def test_post_dont_have_so_much(self):
@@ -159,7 +159,7 @@ class VendingNoLock(TestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
     def test_post_zero_amount(self):
@@ -175,7 +175,7 @@ class VendingNoLock(TestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
     def test_post_negative_amount(self):
@@ -191,7 +191,7 @@ class VendingNoLock(TestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
 
@@ -211,7 +211,7 @@ class Vending(MyTransactionTestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
 
@@ -235,7 +235,7 @@ class Vending(MyTransactionTestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
 
@@ -259,7 +259,7 @@ class Vending(MyTransactionTestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
 
@@ -283,7 +283,7 @@ class Vending(MyTransactionTestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
 
@@ -307,7 +307,7 @@ class Vending(MyTransactionTestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
 
@@ -331,7 +331,7 @@ class Vending(MyTransactionTestCase):
                 "card3": 0,
             }, ]
         login(self)
-        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
         user = User.objects.get(userid="s1")
 
