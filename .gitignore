@@ -58,3 +58,4 @@ target/
 /zeny_plugin/zeny_plugin/settings_local.py
 
 bower_components/
+.idea/
