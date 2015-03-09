@@ -18,5 +18,87 @@
     },
     "model": "app.storage",
     "pk": 1
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 5,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 502,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 5,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 503,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 5,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 502,
+      "unique_id": 0,
+      "zeny": 0
+    },
+    "model": "app.vending",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 5,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 503,
+      "unique_id": 0,
+      "zeny": 1000
+    },
+    "model": "app.vending",
+    "pk": 2
   }
 ]

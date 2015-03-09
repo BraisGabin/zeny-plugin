@@ -2,11 +2,13 @@ import json
 import unittest
 
 from ddt import ddt, data
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from django.test import TestCase
 
 from ..models import User
 from .. import views
+from .testcases import MyTransactionTestCase
 
 
 def create_oauth2_header(test, username, password, client_id):
@@ -95,7 +97,7 @@ class UserSecurityAccess(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
-class Vending(TestCase):
+class VendingNoLock(TestCase):
     fixtures = ['user.json', 'items.json']
 
     def test_post_empty(self):
@@ -131,8 +133,24 @@ class Vending(TestCase):
     def test_post_dont_have(self):
         items = [
             {
-                "nameid": 502,
+                "nameid": 506,
                 "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_post_dont_have_so_much(self):
+        items = [
+            {
+                "nameid": 501,
+                "amount": 6,
                 "refine": 0,
                 "attribute": 0,
                 "card0": 0,
@@ -176,7 +194,11 @@ class Vending(TestCase):
         response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
         self.assertEqual(response.status_code, 400)
 
-    def test_post_ok(self):
+
+class Vending(MyTransactionTestCase):
+    fixtures = ['user.json', 'items.json']
+
+    def test_move_first_not_all(self):
         items = [
             {
                 "nameid": 501,
@@ -190,7 +212,135 @@ class Vending(TestCase):
             }, ]
         login(self)
         response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        storage = user.storage.get(nameid=501)
+        self.assertEqual(storage.amount, 4)
+
+        vending = user.vending.get(nameid=501)
+        self.assertEqual(vending.amount, 1)
+        self.assertEqual(vending.zeny, 0)
+
+    def test_move_first_all(self):
+        items = [
+            {
+                "nameid": 501,
+                "amount": 5,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        with self.assertRaises(ObjectDoesNotExist):
+            user.storage.get(nameid=501)
+
+        vending = user.vending.get(nameid=501)
+        self.assertEqual(vending.amount, 5)
+        self.assertEqual(vending.zeny, 0)
+
+    def test_move_not_first_not_all(self):
+        items = [
+            {
+                "nameid": 502,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        storage = user.storage.get(nameid=502)
+        self.assertEqual(storage.amount, 4)
+
+        vending = user.vending.get(nameid=502)
+        self.assertEqual(vending.amount, 6)
+        self.assertEqual(vending.zeny, 0)
+
+    def test_move_not_first_all(self):
+        items = [
+            {
+                "nameid": 502,
+                "amount": 5,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        with self.assertRaises(ObjectDoesNotExist):
+            user.storage.get(nameid=502)
+
+        vending = user.vending.get(nameid=502)
+        self.assertEqual(vending.amount, 10)
+        self.assertEqual(vending.zeny, 0)
+
+    def test_move_not_first_not_all_zeny(self):
+        items = [
+            {
+                "nameid": 503,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        storage = user.storage.get(nameid=503)
+        self.assertEqual(storage.amount, 4)
+
+        vending = user.vending.get(nameid=503)
+        self.assertEqual(vending.amount, 6)
+        self.assertEqual(vending.zeny, 1000)
+
+    def test_move_not_first_all_zeny(self):
+        items = [
+            {
+                "nameid": 503,
+                "amount": 5,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self)
+        response = self.client.post('/user/me/vending/', json.dumps(items), "application/json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        with self.assertRaises(ObjectDoesNotExist):
+            user.storage.get(nameid=503)
+
+        vending = user.vending.get(nameid=503)
+        self.assertEqual(vending.amount, 10)
+        self.assertEqual(vending.zeny, 1000)
 
 
 class ViewsMethods(unittest.TestCase):

@@ -53,6 +53,7 @@ class VendingList(UserMe, generics.ListCreateAPIView):
             raise serializers.ValidationError('No items.')
         check_no_repeated_items(items)
         Storage.objects.check_items(self.request.user, items)
+        Storage.objects.move_items(self.request.user, items)
         return Response(None, status=204)
 
 
