@@ -7,9 +7,7 @@ env:
 
 # command to install dependencies
 install:
-  - "pip install -r zeny_plugin/requirements.txt"
+  - pip install -r requirements.txt
 
 # command to run tests
-script:
-  - cd zeny_plugin
-  - python manage.py test
+script: python manage.py test
