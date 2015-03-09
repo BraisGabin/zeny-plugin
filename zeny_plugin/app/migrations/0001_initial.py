@@ -2,11 +2,11 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import app.models
+import zeny_plugin.app.models
 
 
 def get_sql(file_name):
-    with open("app/migrations/" + file_name, "r") as sql:
+    with open("zeny_plugin/app/migrations/" + file_name, "r") as sql:
         return sql.read()
 
 
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
                 ('nameid', models.IntegerField()),
-                ('amount', models.PositiveIntegerField(validators=[app.models.strictly_positive])),
+                ('amount', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive])),
                 ('equip', models.IntegerField()),
                 ('identify', models.IntegerField()),
                 ('refine', models.IntegerField()),
@@ -142,7 +142,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
                 ('nameid', models.IntegerField()),
-                ('amount', models.PositiveIntegerField(validators=[app.models.strictly_positive])),
+                ('amount', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive])),
                 ('equip', models.IntegerField()),
                 ('identify', models.IntegerField()),
                 ('refine', models.IntegerField()),
