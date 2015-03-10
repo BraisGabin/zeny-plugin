@@ -144,6 +144,7 @@ REPLACE INTO `item_db_re` VALUES (506,'Green_Potion','Green Potion',0,40,NULL,70
 
 # Weapons
 REPLACE INTO `item_db_re` VALUES (1101,'Sword','Sword',5,100,NULL,500,'25',NULL,1,3,0x000654E3,63,2,2,1,'2',1,2,NULL,NULL,NULL);
+REPLACE INTO `item_db_re` VALUES (1373,'Brood_Axe_C','Refined Bloody Axe',5,2,NULL,0,'205',NULL,1,0,0x000444A2,63,2,34,4,'0',0,7,'bonus bStr,20; bonus bMatkRate,20; bonus bAspdRate,5;',NULL,NULL);
 
 # Armors
 REPLACE INTO `item_db_re` VALUES (2301,'Cotton_Shirt','Cotton Shirt',4,10,NULL,100,NULL,10,NULL,0,0xFFFFFFFF,63,2,16,NULL,'0',1,0,NULL,NULL,NULL);

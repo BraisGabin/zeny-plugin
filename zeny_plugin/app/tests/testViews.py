@@ -192,6 +192,57 @@ class VendingNoLock(APITestCase):
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
+    def test_post_no_identified_item(self):
+        """
+        s1 have two 1101: one identified and other not.
+        """
+        items = [
+            {
+                "nameid": 1101,
+                "amount": 2,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_post_bounded_item(self):
+        items = [
+            {
+                "nameid": 2301,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_post_expire_item(self):
+        items = [
+            {
+                "nameid": 1373,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400)
+
     def test_post_online(self):
         items = [
             {
