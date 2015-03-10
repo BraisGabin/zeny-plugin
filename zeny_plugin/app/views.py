@@ -58,7 +58,7 @@ class VendingList(UserMe, generics.ListCreateAPIView):
 
 
 def check_no_repeated_items(items):
-    keys = ['nameid', 'refine', 'attribute', 'card0', 'card1', 'card2', 'card3']
+    keys = ['nameid', 'refine', 'card0', 'card1', 'card2', 'card3']
     for i in range(0, len(items)):
         for j in range(i + 1, len(items)):
             a = items[i]

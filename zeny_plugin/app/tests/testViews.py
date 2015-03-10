@@ -109,7 +109,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 501,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -118,7 +117,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 501,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -134,7 +132,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 506,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -150,7 +147,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 501,
                 "amount": 6,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -166,7 +162,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 501,
                 "amount": 0,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -182,7 +177,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 501,
                 "amount": -1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -201,7 +195,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 1101,
                 "amount": 2,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -217,7 +210,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 2301,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -233,7 +225,21 @@ class VendingNoLock(APITestCase):
                 "nameid": 1373,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_post_broken_item(self):
+        items = [
+            {
+                "nameid": 2302,
+                "amount": 1,
+                "refine": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -249,7 +255,6 @@ class VendingNoLock(APITestCase):
                 "nameid": 501,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -269,7 +274,6 @@ class Vending(MyTransactionTestCase):
                 "nameid": 501,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -293,7 +297,6 @@ class Vending(MyTransactionTestCase):
                 "nameid": 501,
                 "amount": 5,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -317,7 +320,6 @@ class Vending(MyTransactionTestCase):
                 "nameid": 502,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -341,7 +343,6 @@ class Vending(MyTransactionTestCase):
                 "nameid": 502,
                 "amount": 5,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -365,7 +366,6 @@ class Vending(MyTransactionTestCase):
                 "nameid": 503,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -389,7 +389,6 @@ class Vending(MyTransactionTestCase):
                 "nameid": 503,
                 "amount": 5,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -417,7 +416,6 @@ class VendingNoStackable(MyTransactionTestCase):
                 "nameid": 1201,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -443,7 +441,6 @@ class VendingNoStackable(MyTransactionTestCase):
                 "nameid": 1201,
                 "amount": 3,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -467,7 +464,6 @@ class VendingNoStackable(MyTransactionTestCase):
                 "nameid": 1202,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -493,7 +489,6 @@ class VendingNoStackable(MyTransactionTestCase):
                 "nameid": 1202,
                 "amount": 3,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -517,7 +512,6 @@ class VendingNoStackable(MyTransactionTestCase):
                 "nameid": 1203,
                 "amount": 1,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -543,7 +537,6 @@ class VendingNoStackable(MyTransactionTestCase):
                 "nameid": 1203,
                 "amount": 3,
                 "refine": 0,
-                "attribute": 0,
                 "card0": 0,
                 "card1": 0,
                 "card2": 0,
@@ -565,15 +558,15 @@ class VendingNoStackable(MyTransactionTestCase):
 class ViewsMethods(unittest.TestCase):
     def test_check_no_repeated_item_ok(self):
         items = [
-            {'nameid': 501, 'amount': 3, 'refine': 0, 'attribute': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
-            {'nameid': 502, 'amount': 3, 'refine': 0, 'attribute': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
+            {'nameid': 501, 'amount': 3, 'refine': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
+            {'nameid': 502, 'amount': 3, 'refine': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
         ]
         views.check_no_repeated_items(items)
 
     def test_check_no_repeated_item_exception(self):
         items = [
-            {'nameid': 501, 'amount': 3, 'refine': 0, 'attribute': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
-            {'nameid': 501, 'amount': 4, 'refine': 0, 'attribute': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
+            {'nameid': 501, 'amount': 3, 'refine': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
+            {'nameid': 501, 'amount': 4, 'refine': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
         ]
         with self.assertRaises(serializers.ValidationError):
             views.check_no_repeated_items(items)

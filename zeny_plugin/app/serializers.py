@@ -19,10 +19,10 @@ class UserSerializer(serializers.ModelSerializer):
 class StorageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Storage
-        fields = ('nameid', 'amount', 'refine', 'attribute', 'card0', 'card1', 'card2', 'card3',)
+        fields = ('nameid', 'amount', 'refine', 'card0', 'card1', 'card2', 'card3',)
 
 
 class VendingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vending
-        fields = ('nameid', 'amount', 'refine', 'attribute', 'card0', 'card1', 'card2', 'card3', 'zeny')
+        fields = ('nameid', 'amount', 'refine', 'card0', 'card1', 'card2', 'card3', 'zeny')

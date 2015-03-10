@@ -6,9 +6,8 @@ from zeny_plugin.app.exceptions import ConflictError
 
 def find_item(row, items):
     for item in items:
-        if int(row[0]) == item['nameid'] and int(row[1]) == item['refine'] and int(row[2]) == item['attribute'] and\
-                int(row[3]) == item['card0'] and int(row[4]) == item['card1'] and int(row[5]) == item['card2'] and\
-                int(row[6]) == item['card3']:
+        if int(row[0]) == item['nameid'] and int(row[1]) == item['refine'] and int(row[2]) == item['card0'] and \
+                int(row[3]) == item['card1'] and int(row[4]) == item['card2'] and int(row[5]) == item['card3']:
             return item
     raise TypeError("Unknown item")
 
@@ -19,16 +18,15 @@ def add_item_vending_storage(cursor, user, item):
             (SELECT account_id, nameid, %s, equip, identify, refine, attribute, card0, card1, card2, card3, expire_time, bound, unique_id, 0
             FROM storage
             WHERE
-            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            bound = 0 AND expire_time = 0 AND identify != 0 AND attribute = 0 AND
             account_id = %s AND
-            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            nameid = %s AND refine = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
             )
     """, [
         item['amount'],
         user.pk,
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -42,15 +40,14 @@ def update_item_vending_storage(cursor, user, item):
     cursor.execute("""UPDATE storage_vending
             SET amount = amount + %s
             WHERE
-            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            bound = 0 AND expire_time = 0 AND identify != 0 AND attribute = 0 AND
             account_id = %s AND
-            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            nameid = %s AND refine = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
     """, [
         item['amount'],
         user.pk,
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -63,15 +60,14 @@ def update_item_vending_storage(cursor, user, item):
 def add_no_stackable_item_vending_storage(cursor, user, item):
     cursor.execute("""SELECT zeny FROM storage_vending
             WHERE
-            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            bound = 0 AND expire_time = 0 AND identify != 0 AND attribute = 0 AND
             account_id = %s AND
-            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            nameid = %s AND refine = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
             LIMIT 1
     """, [
         user.pk,
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -85,9 +81,9 @@ def add_no_stackable_item_vending_storage(cursor, user, item):
             (SELECT account_id, nameid, amount, equip, identify, refine, attribute, card0, card1, card2, card3, expire_time, bound, unique_id, %s
             FROM storage
             WHERE
-            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            bound = 0 AND expire_time = 0 AND identify != 0 AND attribute = 0 AND
             account_id = %s AND
-            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            nameid = %s AND refine = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
             LIMIT %s
             )
     """, [
@@ -95,7 +91,6 @@ def add_no_stackable_item_vending_storage(cursor, user, item):
         user.pk,
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -109,14 +104,13 @@ def add_no_stackable_item_vending_storage(cursor, user, item):
 def remove_item_storage(cursor, user, item):
     cursor.execute("""DELETE FROM storage
             WHERE
-            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            bound = 0 AND expire_time = 0 AND identify != 0 AND attribute = 0 AND
             account_id = %s AND
-            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            nameid = %s AND refine = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
     """, [
         user.pk,
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -130,15 +124,14 @@ def update_item_storage(cursor, user, item):
     cursor.execute("""UPDATE storage
             SET amount = amount - %s
             WHERE
-            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            bound = 0 AND expire_time = 0 AND identify != 0 AND attribute = 0 AND
             account_id = %s AND
-            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            nameid = %s AND refine = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
     """, [
         item['amount'],
         user.pk,
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -151,15 +144,14 @@ def update_item_storage(cursor, user, item):
 def remove_no_stackable_item_storage(cursor, user, item):
     cursor.execute("""DELETE FROM storage
             WHERE
-            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            bound = 0 AND expire_time = 0 AND identify != 0 AND attribute = 0 AND
             account_id = %s AND
-            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            nameid = %s AND refine = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
             LIMIT %s
     """, [
         user.pk,
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -184,7 +176,6 @@ def check_user_have_items(cursor, user, items):
         SELECT
             storage.nameid,
             storage.refine,
-            storage.attribute,
             storage.card0,
             storage.card1,
             storage.card2,
@@ -197,7 +188,7 @@ def check_user_have_items(cursor, user, items):
         identify != 0 AND
         account_id = %s AND
         (""" + where + """)
-        GROUP BY nameid, refine, attribute, card0, card1, card2, card3
+        GROUP BY nameid, refine, card0, card1, card2, card3
         HAVING (""" + having + ")"
 
     parameters = [user.pk]
@@ -216,7 +207,6 @@ def get_user_items(cursor, user, items):
         SELECT
             storage.nameid,
             storage.refine,
-            storage.attribute,
             storage.card0,
             storage.card1,
             storage.card2,
@@ -231,7 +221,6 @@ def get_user_items(cursor, user, items):
             item.type NOT IN (4, 5, 7, 8, 12) AND
             storage.nameid = storage_vending.nameid AND
             storage.refine = storage_vending.refine AND
-            storage.attribute = storage_vending.attribute AND
             storage.card0 = storage_vending.card0 AND
             storage.card1 = storage_vending.card1 AND
             storage.card2 = storage_vending.card2 AND
@@ -242,7 +231,7 @@ def get_user_items(cursor, user, items):
             storage.identify != 0 AND
             storage.account_id = %s AND
             (""" + where + """)
-        GROUP BY nameid, refine, attribute, card0, card1, card2, card3
+        GROUP BY nameid, refine, card0, card1, card2, card3
         HAVING (""" + having + ")"
 
     parameters = [user.pk]
@@ -261,7 +250,6 @@ def where_items_amount(items):
         where.append("""(
             storage.nameid = %s AND
             storage.refine = %s AND
-            storage.attribute = %s AND
             storage.card0 = %s AND
             storage.card1 = %s AND
             storage.card2 = %s AND
@@ -270,7 +258,6 @@ def where_items_amount(items):
         having.append("""(
             storage.nameid = %s AND
             storage.refine = %s AND
-            storage.attribute = %s AND
             storage.card0 = %s AND
             storage.card1 = %s AND
             storage.card2 = %s AND
@@ -291,7 +278,6 @@ def get_params_item(item):
     return [
         item['nameid'],
         item['refine'],
-        item['attribute'],
         item['card0'],
         item['card1'],
         item['card2'],
@@ -327,17 +313,17 @@ class StorageManager(models.Manager):
                 raise ValidationError("You doesn't have this items.")  # TODO Verbose error. 409?
             for row in cursor.fetchall():
                 item = find_item(row, items)
-                if int(row[8]) in [4, 5, 7, 8, 12]:
+                if int(row[7]) in [4, 5, 7, 8, 12]:
                     add_no_stackable_item_vending_storage(cursor, user, item)
                     remove_no_stackable_item_storage(cursor, user, item)
                 else:
                     # Add to storage_vending
-                    if row[9] is None:
+                    if row[8] is None:
                         add_item_vending_storage(cursor, user, item)
                     else:
                         update_item_vending_storage(cursor, user, item)
                     # Remove to storage
-                    if int(row[7]) == item['amount']:
+                    if int(row[6]) == item['amount']:
                         remove_item_storage(cursor, user, item)
                     else:
                         update_item_storage(cursor, user, item)
