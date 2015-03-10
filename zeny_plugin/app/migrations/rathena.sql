@@ -144,6 +144,9 @@ REPLACE INTO `item_db_re` VALUES (506,'Green_Potion','Green Potion',0,40,NULL,70
 
 # Weapons
 REPLACE INTO `item_db_re` VALUES (1101,'Sword','Sword',5,100,NULL,500,'25',NULL,1,3,0x000654E3,63,2,2,1,'2',1,2,NULL,NULL,NULL);
+REPLACE INTO `item_db_re` VALUES (1201,'Knife','Knife',5,50,NULL,400,'17',NULL,1,3,0x3E9F7EEF,63,2,2,1,'1',1,1,NULL,NULL,NULL);
+REPLACE INTO `item_db_re` VALUES (1202,'Knife_','Knife',5,50,NULL,400,'17',NULL,1,4,0x3E9F7EEF,63,2,2,1,'1',1,1,NULL,NULL,NULL);
+REPLACE INTO `item_db_re` VALUES (1203,'Knife__','Knife',5,50,NULL,400,'17',NULL,1,0,0x3E9F7EEF,63,2,2,1,'1',1,1,NULL,NULL,NULL);
 REPLACE INTO `item_db_re` VALUES (1373,'Brood_Axe_C','Refined Bloody Axe',5,2,NULL,0,'205',NULL,1,0,0x000444A2,63,2,34,4,'0',0,7,'bonus bStr,20; bonus bMatkRate,20; bonus bAspdRate,5;',NULL,NULL);
 
 # Armors

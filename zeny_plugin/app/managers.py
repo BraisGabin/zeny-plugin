@@ -42,6 +42,7 @@ def update_item_vending_storage(cursor, user, item):
     cursor.execute("""UPDATE storage_vending
             SET amount = amount + %s
             WHERE
+            bound = 0 AND expire_time = 0 AND identify != 0 AND
             account_id = %s AND
             nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
     """, [
@@ -59,9 +60,56 @@ def update_item_vending_storage(cursor, user, item):
         raise TypeError("Critical error, possible dupe")
 
 
+def add_no_stackable_item_vending_storage(cursor, user, item):
+    cursor.execute("""SELECT zeny FROM storage_vending
+            WHERE
+            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            account_id = %s AND
+            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            LIMIT 1
+    """, [
+        user.pk,
+        item['nameid'],
+        item['refine'],
+        item['attribute'],
+        item['card0'],
+        item['card1'],
+        item['card2'],
+        item['card3']
+    ])
+
+    zeny = cursor.fetchone()[0] if cursor.rowcount > 0 else 0
+
+    cursor.execute("""INSERT INTO storage_vending
+            (account_id, nameid, amount, equip, identify, refine, attribute, card0, card1, card2, card3, expire_time, bound, unique_id, zeny)
+            (SELECT account_id, nameid, amount, equip, identify, refine, attribute, card0, card1, card2, card3, expire_time, bound, unique_id, %s
+            FROM storage
+            WHERE
+            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            account_id = %s AND
+            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            LIMIT %s
+            )
+    """, [
+        zeny,
+        user.pk,
+        item['nameid'],
+        item['refine'],
+        item['attribute'],
+        item['card0'],
+        item['card1'],
+        item['card2'],
+        item['card3'],
+        item['amount'],
+    ])
+    if cursor.rowcount != item['amount']:
+        raise TypeError("Critical error, possible dupe")
+
+
 def remove_item_storage(cursor, user, item):
     cursor.execute("""DELETE FROM storage
             WHERE
+            bound = 0 AND expire_time = 0 AND identify != 0 AND
             account_id = %s AND
             nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
     """, [
@@ -82,6 +130,7 @@ def update_item_storage(cursor, user, item):
     cursor.execute("""UPDATE storage
             SET amount = amount - %s
             WHERE
+            bound = 0 AND expire_time = 0 AND identify != 0 AND
             account_id = %s AND
             nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
     """, [
@@ -96,6 +145,28 @@ def update_item_storage(cursor, user, item):
         item['card3']
     ])
     if cursor.rowcount != 1:
+        raise TypeError("Critical error, possible dupe")
+
+
+def remove_no_stackable_item_storage(cursor, user, item):
+    cursor.execute("""DELETE FROM storage
+            WHERE
+            bound = 0 AND expire_time = 0 AND identify != 0 AND
+            account_id = %s AND
+            nameid = %s AND refine = %s AND attribute = %s AND card0 = %s AND card1 = %s AND card2 = %s AND card3 = %s
+            LIMIT %s
+    """, [
+        user.pk,
+        item['nameid'],
+        item['refine'],
+        item['attribute'],
+        item['card0'],
+        item['card1'],
+        item['card2'],
+        item['card3'],
+        item['amount']
+    ])
+    if cursor.rowcount != item['amount']:
         raise TypeError("Critical error, possible dupe")
 
 
@@ -257,7 +328,8 @@ class StorageManager(models.Manager):
             for row in cursor.fetchall():
                 item = find_item(row, items)
                 if int(row[8]) in [4, 5, 7, 8, 12]:
-                    raise NotImplemented("No stakable Item")  # No stackable
+                    add_no_stackable_item_vending_storage(cursor, user, item)
+                    remove_no_stackable_item_storage(cursor, user, item)
                 else:
                     # Add to storage_vending
                     if row[9] is None:

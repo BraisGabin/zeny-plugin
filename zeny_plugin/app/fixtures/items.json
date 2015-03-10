@@ -165,6 +165,186 @@
       "attribute": 0,
       "bound": 0,
       "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1201,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 8
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1201,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 9
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1201,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 10
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1202,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 11
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1202,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 12
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1202,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 13
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1203,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 14
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1203,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 15
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1203,
+      "unique_id": 0
+    },
+    "model": "app.storage",
+    "pk": 16
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
       "amount": 5,
       "identify": 1,
       "refine": 0,
@@ -200,5 +380,47 @@
     },
     "model": "app.vending",
     "pk": 2
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1202,
+      "unique_id": 0,
+      "zeny": 0
+    },
+    "model": "app.vending",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "account": 1,
+      "attribute": 0,
+      "bound": 0,
+      "expire_time": 0,
+      "amount": 1,
+      "identify": 1,
+      "refine": 0,
+      "card2": 0,
+      "card3": 0,
+      "equip": 0,
+      "card1": 0,
+      "card0": 0,
+      "nameid": 1203,
+      "unique_id": 0,
+      "zeny": 1000
+    },
+    "model": "app.vending",
+    "pk": 4
   }
 ]

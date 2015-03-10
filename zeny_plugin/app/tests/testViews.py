@@ -263,7 +263,7 @@ class VendingNoLock(APITestCase):
 class Vending(MyTransactionTestCase):
     fixtures = ['user.json', 'items.json']
 
-    def test_move_first_not_all(self):
+    def test_move_first_no_all(self):
         items = [
             {
                 "nameid": 501,
@@ -311,7 +311,7 @@ class Vending(MyTransactionTestCase):
         self.assertEqual(vending.amount, 5)
         self.assertEqual(vending.zeny, 0)
 
-    def test_move_not_first_not_all(self):
+    def test_move_no_first_no_all(self):
         items = [
             {
                 "nameid": 502,
@@ -335,7 +335,7 @@ class Vending(MyTransactionTestCase):
         self.assertEqual(vending.amount, 6)
         self.assertEqual(vending.zeny, 0)
 
-    def test_move_not_first_all(self):
+    def test_move_no_first_all(self):
         items = [
             {
                 "nameid": 502,
@@ -359,7 +359,7 @@ class Vending(MyTransactionTestCase):
         self.assertEqual(vending.amount, 10)
         self.assertEqual(vending.zeny, 0)
 
-    def test_move_not_first_not_all_zeny(self):
+    def test_move_no_first_no_all_zeny(self):
         items = [
             {
                 "nameid": 503,
@@ -383,7 +383,7 @@ class Vending(MyTransactionTestCase):
         self.assertEqual(vending.amount, 6)
         self.assertEqual(vending.zeny, 1000)
 
-    def test_move_not_first_all_zeny(self):
+    def test_move_no_first_all_zeny(self):
         items = [
             {
                 "nameid": 503,
@@ -406,6 +406,160 @@ class Vending(MyTransactionTestCase):
         vending = user.vending.get(nameid=503)
         self.assertEqual(vending.amount, 10)
         self.assertEqual(vending.zeny, 1000)
+
+
+class VendingNoStackable(MyTransactionTestCase):
+    fixtures = ['user.json', 'items.json']
+
+    def test_move_first_no_all(self):
+        items = [
+            {
+                "nameid": 1201,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        self.assertEqual(user.storage.filter(nameid=1201).count(), 2)
+        for storage in user.storage.filter(nameid=1201):
+            self.assertEqual(storage.amount, 1)
+
+        self.assertEqual(user.vending.filter(nameid=1201).count(), 1)
+        for vending in user.vending.filter(nameid=1201):
+            self.assertEqual(vending.amount, 1)
+            self.assertEqual(vending.zeny, 0)
+
+    def test_move_first_all(self):
+        items = [
+            {
+                "nameid": 1201,
+                "amount": 3,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        self.assertEqual(user.storage.filter(nameid=1201).count(), 0)
+
+        self.assertEqual(user.vending.filter(nameid=1201).count(), 3)
+        for vending in user.vending.filter(nameid=1201):
+            self.assertEqual(vending.amount, 1)
+            self.assertEqual(vending.zeny, 0)
+
+    def test_move_no_first_no_all(self):
+        items = [
+            {
+                "nameid": 1202,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        self.assertEqual(user.storage.filter(nameid=1202).count(), 2)
+        for storage in user.storage.filter(nameid=1202):
+            self.assertEqual(storage.amount, 1)
+
+        self.assertEqual(user.vending.filter(nameid=1202).count(), 2)
+        for vending in user.vending.filter(nameid=1202):
+            self.assertEqual(vending.amount, 1)
+            self.assertEqual(vending.zeny, 0)
+
+    def test_move_no_first_all(self):
+        items = [
+            {
+                "nameid": 1202,
+                "amount": 3,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        self.assertEqual(user.storage.filter(nameid=1202).count(), 0)
+
+        self.assertEqual(user.vending.filter(nameid=1202).count(), 4)
+        for vending in user.vending.filter(nameid=1202):
+            self.assertEqual(vending.amount, 1)
+            self.assertEqual(vending.zeny, 0)
+
+    def test_move_no_first_no_all_zeny(self):
+        items = [
+            {
+                "nameid": 1203,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        self.assertEqual(user.storage.filter(nameid=1203).count(), 2)
+        for storage in user.storage.filter(nameid=1203):
+            self.assertEqual(storage.amount, 1)
+
+        self.assertEqual(user.vending.filter(nameid=1203).count(), 2)
+        for vending in user.vending.filter(nameid=1203):
+            self.assertEqual(vending.amount, 1)
+            self.assertEqual(vending.zeny, 1000)
+
+    def test_move_no_first_all_zeny(self):
+        items = [
+            {
+                "nameid": 1203,
+                "amount": 3,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client)
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        self.assertEqual(user.storage.filter(nameid=1203).count(), 0)
+
+        self.assertEqual(user.vending.filter(nameid=1203).count(), 4)
+        for vending in user.vending.filter(nameid=1203):
+            self.assertEqual(vending.amount, 1)
+            self.assertEqual(vending.zeny, 1000)
 
 
 class ViewsMethods(unittest.TestCase):
