@@ -192,6 +192,22 @@ class VendingNoLock(APITestCase):
         response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400)
 
+    def test_post_online(self):
+        items = [
+            {
+                "nameid": 501,
+                "amount": 1,
+                "refine": 0,
+                "attribute": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        login(self.client, "s2")
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 409)
+
 
 class Vending(MyTransactionTestCase):
     fixtures = ['user.json', 'items.json']

@@ -1,6 +1,8 @@
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
+from zeny_plugin.app.exceptions import ConflictError
+
 
 def find_item(row, items):
     for item in items:
@@ -97,6 +99,13 @@ def update_item_storage(cursor, user, item):
         raise TypeError("Critical error, possible dupe")
 
 
+def check_no_char_online(cursor, user):
+    cursor.execute("SELECT name FROM `char` WHERE account_id = %s AND online != 0", [user.pk])
+    if cursor.rowcount > 0:
+        name = cursor.fetchone()[0]
+        raise ConflictError("You're connected to the server with the PJ %s, please disconnect and retry." % name)
+
+
 class StorageManager(models.Manager):
     def get_queryset(self):
         return super(StorageManager, self).get_queryset().filter(bound='0', expire_time='0', ).exclude(identify='0')
@@ -105,6 +114,7 @@ class StorageManager(models.Manager):
         from django.db import connection
 
         cursor = connection.cursor()
+        check_no_char_online(cursor, user)
         cursor.execute(*self.check_items_sql(user, items))
         if cursor.rowcount != len(items):
             raise ValidationError("You doesn't have this items.")  # TODO Verbose error. 409?
@@ -114,7 +124,13 @@ class StorageManager(models.Manager):
 
         cursor = connection.cursor()
         try:
-            cursor.execute("LOCK TABLES storage LOW_PRIORITY WRITE, item_db_re AS item LOW_PRIORITY WRITE, storage_vending LOW_PRIORITY WRITE")
+            cursor.execute("""
+                    LOCK TABLES
+                    `char` LOW_PRIORITY WRITE,
+                    `storage` LOW_PRIORITY WRITE,
+                    `item_db_re` AS item LOW_PRIORITY WRITE,
+                    `storage_vending` LOW_PRIORITY WRITE""")
+            check_no_char_online(cursor, user)
             cursor.execute(*self.check_items_sql2(user, items))
             if cursor.rowcount != len(items):
                 raise ValidationError("You doesn't have this items.")  # TODO Verbose error. 409?
