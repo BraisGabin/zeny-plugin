@@ -29,7 +29,7 @@ class UserDetail(UserMe, generics.RetrieveAPIView):
         return super(UserDetail, self).get(request, *args, **kwargs)
 
 
-class StorageList(UserMe, generics.ListAPIView):
+class StorageList(UserMe, generics.ListCreateAPIView):
     serializer_class = StorageSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -37,6 +37,20 @@ class StorageList(UserMe, generics.ListAPIView):
         pk = self.kwargs.get('pk')
         self.queryset = Storage.objects.filter(account_id=pk)
         return super(StorageList, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.serializer_class = StorageSerializer
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        items = serializer.data
+        if len(items) == 0:
+            raise serializers.ValidationError('No items.')
+        check_no_repeated_items(items)
+        if self.request.user.online:
+            raise ConflictError("You're connected to the server. please disconnect and retry.")
+        Vending.objects.check_items(self.request.user, items)
+        Vending.objects.move_items(self.request.user, items)
+        return Response(None, status=204)
 
 
 class VendingList(UserMe, generics.ListCreateAPIView):
