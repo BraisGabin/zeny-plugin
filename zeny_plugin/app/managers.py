@@ -293,7 +293,6 @@ class StorageManager(models.Manager):
         from django.db import connection
 
         cursor = connection.cursor()
-        check_no_char_online(cursor, user)
         check_user_have_items(cursor, user, items)
 
     def move_items(self, user, items):

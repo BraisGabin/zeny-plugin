@@ -115,6 +115,10 @@ class User(models.Model):
         # Simplest possible answer: No, always
         return False
 
+    @property
+    def online(self):
+        return self.chars.exclude(online=0).exists()
+
 
 class Char(models.Model):
     char_id = models.PositiveIntegerField(primary_key=True)
