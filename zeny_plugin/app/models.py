@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, update_last_login
 from django.utils.crypto import salted_hmac
 
-from .managers import StorageManager
+from .managers import StorageManager, VendingManager
 
 
 # FIXME This is really ugly
@@ -226,7 +226,7 @@ class Vending(models.Model):
     unique_id = models.BigIntegerField()
     zeny = models.PositiveIntegerField(default=0)
 
-    objects = StorageManager()
+    objects = VendingManager()
 
     class Meta:
         managed = False
