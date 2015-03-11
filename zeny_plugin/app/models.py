@@ -224,7 +224,7 @@ class Vending(models.Model):
     expire_time = models.IntegerField()
     bound = models.IntegerField()
     unique_id = models.BigIntegerField()
-    zeny = models.IntegerField(default=0)
+    zeny = models.PositiveIntegerField(default=0)
 
     objects = StorageManager()
 

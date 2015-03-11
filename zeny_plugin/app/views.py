@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .models import User, Storage, Vending
 from .serializers import UserSerializer, StorageSerializer, VendingSerializer
 from zeny_plugin.app.exceptions import ConflictError
+from zeny_plugin.app.serializers import VendingSerializer2
 
 
 class UserMe(views.APIView):
@@ -59,6 +60,19 @@ class VendingList(UserMe, generics.ListCreateAPIView):
             raise ConflictError("You're connected to the server. please disconnect and retry.")
         Storage.objects.check_items(self.request.user, items)
         Storage.objects.move_items(self.request.user, items)
+        return Response(None, status=204)
+
+    def put(self, request, *args, **kwargs):
+        self.serializer_class = VendingSerializer2
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        items = serializer.data
+        if len(items) == 0:
+            raise serializers.ValidationError('No items.')
+        check_no_repeated_items(items)
+        for item in items:
+            zeny = item.pop('zeny')
+            Vending.objects.filter(**item).update(zeny=zeny)
         return Response(None, status=204)
 
 

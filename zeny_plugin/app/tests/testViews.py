@@ -94,6 +94,34 @@ class UserSecurityAccess(APITestCase):
         response = self.client.post('/user/1/' + value)
         self.assertEqual(response.status_code, 401)
 
+    @data('vending/', )
+    def test_put_400_me(self, value):
+        login(self.client)
+        response = self.client.put('/user/me/' + value)
+        self.assertEqual(response.status_code, 400)
+
+    @data('vending/', )
+    def test_put_400_pk(self, value):
+        login(self.client)
+        response = self.client.put('/user/1/' + value)
+        self.assertEqual(response.status_code, 400)
+
+    @data('vending/', )
+    def test_put_403(self, value):
+        login(self.client)
+        response = self.client.put('/user/2/' + value)
+        self.assertEqual(response.status_code, 403)
+
+    @data('vending/', )
+    def test_put_401_me(self, value):
+        response = self.client.put('/user/me/' + value)
+        self.assertEqual(response.status_code, 401)
+
+    @data('vending/', )
+    def test_put_401_pk(self, value):
+        response = self.client.put('/user/1/' + value)
+        self.assertEqual(response.status_code, 401)
+
 
 class VendingNoLock(APITestCase):
     fixtures = ['user.json', 'items.json']
@@ -555,10 +583,124 @@ class VendingNoStackable(MyTransactionTestCase):
 
         self.assertEqual(user.storage.filter(nameid=1203).count(), 0)
 
-        self.assertEqual(user.vending.filter(nameid=1203).count(), 4)
+        self.assertEqual(user.vending.filter(nameid=1203).count(), 5)
         for vending in user.vending.filter(nameid=1203):
             self.assertEqual(vending.amount, 1)
             self.assertEqual(vending.zeny, 1000)
+
+
+class VendingZeny(APITestCase):
+    fixtures = ['user.json', 'items.json']
+
+    def test_post_empty(self):
+        login(self.client)
+        response = self.client.put('/user/me/vending/', None, "json")
+        self.assertEqual(response.status_code, 400, response.data)
+
+    def test_post_empty_list(self):
+        items = []
+        login(self.client)
+        response = self.client.put('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400, response.data)
+
+    def test_post_repeat_item(self):
+        items = [
+            {
+                "nameid": 502,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 1000,
+            }, {
+                "nameid": 502,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 500,
+            }, ]
+        login(self.client)
+        response = self.client.put('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400, response.data)
+
+    def test_post_negative_zeny(self):
+        items = [
+            {
+                "nameid": 502,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": -1000,
+            }, ]
+        login(self.client)
+        response = self.client.put('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400, response.data)
+
+    def test_post_ok_online(self):
+        items = [
+            {
+                "nameid": 502,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 1000,
+            }, ]
+        login(self.client, "s2")
+        response = self.client.put('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s2")
+
+        item = user.vending.get(nameid=502)
+        self.assertEqual(item.zeny, 1000)
+
+    def test_post_ok(self):
+        items = [
+            {
+                "nameid": 502,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 1000,
+            },
+            {
+                "nameid": 503,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 1500,
+            },
+            {
+                "nameid": 1203,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 2000,
+            }, ]
+        login(self.client)
+        response = self.client.put('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 204, response.data)
+        user = User.objects.get(userid="s1")
+
+        item = user.vending.get(nameid=502)
+        self.assertEqual(item.zeny, 1000)
+        item = user.vending.get(nameid=503)
+        self.assertEqual(item.zeny, 1500)
+        items = user.vending.filter(nameid=1203)
+        for item in items:
+            self.assertEqual(item.zeny, 2000)
 
 
 class ViewsMethods(unittest.TestCase):

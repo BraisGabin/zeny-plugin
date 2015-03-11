@@ -26,3 +26,9 @@ class VendingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vending
         fields = ('nameid', 'amount', 'refine', 'card0', 'card1', 'card2', 'card3', 'zeny')
+
+
+class VendingSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = Vending
+        fields = ('nameid', 'refine', 'card0', 'card1', 'card2', 'card3', 'zeny')
