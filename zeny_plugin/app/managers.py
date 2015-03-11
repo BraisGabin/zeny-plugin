@@ -321,7 +321,8 @@ class BaseStorageManager(models.Manager):
 
 class StorageManager(BaseStorageManager):
     def get_queryset(self):
-        return super(StorageManager, self).get_queryset().filter(bound='0', expire_time='0', ).exclude(identify='0')
+        return super(StorageManager, self).get_queryset().filter(bound='0', expire_time='0', attribute='0')\
+            .exclude(identify='0')
 
 
 class VendingManager(BaseStorageManager):
