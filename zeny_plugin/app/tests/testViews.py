@@ -103,6 +103,12 @@ class VendingNoLock(APITestCase):
         response = self.client.post('/user/me/vending/', None, "json")
         self.assertEqual(response.status_code, 400)
 
+    def test_post_empty_list(self):
+        items = []
+        login(self.client)
+        response = self.client.put('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400, response.data)
+
     def test_post_repeat_item(self):
         items = [
             {
@@ -526,7 +532,7 @@ class VendingNoStackable(MyTransactionTestCase):
         for storage in user.storage.filter(nameid=1203):
             self.assertEqual(storage.amount, 1)
 
-        self.assertEqual(user.vending.filter(nameid=1203).count(), 2)
+        self.assertEqual(user.vending.filter(nameid=1203).count(), 3)
         for vending in user.vending.filter(nameid=1203):
             self.assertEqual(vending.amount, 1)
             self.assertEqual(vending.zeny, 1000)
