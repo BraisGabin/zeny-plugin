@@ -219,6 +219,7 @@ def get_user_items(cursor, user, items):
             storage.nameid = item.id
         LEFT JOIN storage_vending ON
             item.type NOT IN (4, 5, 7, 8, 12) AND
+            %s = storage_vending.account_id AND
             storage.nameid = storage_vending.nameid AND
             storage.refine = storage_vending.refine AND
             storage.card0 = storage_vending.card0 AND
@@ -234,7 +235,7 @@ def get_user_items(cursor, user, items):
         GROUP BY nameid, refine, card0, card1, card2, card3
         HAVING (""" + having + ")"
 
-    parameters = [user.pk]
+    parameters = [user.pk, user.pk]
     parameters.extend(param_where)
     parameters.extend(param_having)
 
