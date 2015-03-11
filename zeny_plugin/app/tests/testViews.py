@@ -563,6 +563,16 @@ class ViewsMethods(unittest.TestCase):
         ]
         views.check_no_repeated_items(items)
 
+    def test_check_no_repeated_item_ok_empty(self):
+        items = []
+        views.check_no_repeated_items(items)
+
+    def test_check_no_repeated_item_ok_one_item(self):
+        items = [
+            {'nameid': 502, 'amount': 3, 'refine': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},
+        ]
+        views.check_no_repeated_items(items)
+
     def test_check_no_repeated_item_exception(self):
         items = [
             {'nameid': 501, 'amount': 3, 'refine': 0, 'card0': 0, 'card1': 0, 'card2': 0, 'card3': 0},

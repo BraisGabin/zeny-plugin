@@ -1,3 +1,4 @@
+import itertools
 from rest_framework import generics, serializers, views
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -58,15 +59,15 @@ class VendingList(UserMe, generics.ListCreateAPIView):
 
 
 def check_no_repeated_items(items):
+    if any(check_same_item(*item) for item in itertools.permutations(items, 2)):
+        raise serializers.ValidationError('Repeated item.')
+
+
+def check_same_item(a, b):
     keys = ['nameid', 'refine', 'card0', 'card1', 'card2', 'card3']
-    for i in range(0, len(items)):
-        for j in range(i + 1, len(items)):
-            a = items[i]
-            b = items[j]
-            duplicated = True
-            for key in keys:
-                if a[key] != b[key]:
-                    duplicated = False
-                    break
-            if duplicated:
-                raise serializers.ValidationError('Repeated item.')
+    equals = True
+    for key in keys:
+        if a[key] != b[key]:
+            equals = False
+            break
+    return equals
