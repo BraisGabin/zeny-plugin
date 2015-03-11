@@ -107,7 +107,7 @@ class VendingNoLock(MyTestCase):
     def test_post_empty_list(self):
         items = []
         self.login()
-        response = self.client.put('/user/me/vending/', items, "json")
+        response = self.client.post('/user/me/vending/', items, "json")
         self.assertEqual(response.status_code, 400, response.data)
 
     def test_post_repeat_item(self):
