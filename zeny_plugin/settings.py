@@ -96,6 +96,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Zeny settings
+
+MAX_ZENY = 1000000000
+MAX_STORAGE = 600
+MAX_AMOUNT = 30000
+
 try:
     from .settings_local import *
 except ImportError:

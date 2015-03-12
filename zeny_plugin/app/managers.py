@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from .exceptions import ConflictError
@@ -217,6 +218,16 @@ class BaseStorageManager(models.Manager):
         having = ' OR '.join(having)
         return where, having, param_where, param_having
 
+    def _get_destination_size(self, cursor, user):
+        cursor.execute("""SELECT COUNT(*)
+                FROM """ + self.destination_table + """ AS destination
+                WHERE
+                    account_id = %s
+        """, [
+            user.pk
+        ])
+        return int(cursor.fetchone()[0])
+
     def _get_items(self, cursor, user, items):
         self._get_user_items(cursor, user, items)
         if cursor.rowcount != len(items):
@@ -225,7 +236,23 @@ class BaseStorageManager(models.Manager):
             items = relate_items_rows(cursor.fetchall(), items)
         except TypeError:
             raise ConflictError("You don't have those items.")  # TODO Verbose error.
+        self._check_conditions(items, self._get_destination_size(cursor, user))
         return items
+
+    def _check_conditions(self, items, destination_size):
+        required_size = 0
+
+        for item in items:
+            if item['type'] not in [4, 5, 7, 8, 12]:
+                if item['destination_amount'] + item['amount'] > self.max_stack:
+                    raise ConflictError("Stack limit. You can't stack more than %d items." % self.max_stack)
+                if item['destination_amount'] <= 0:
+                    required_size += 1
+            else:
+                required_size += item['amount']
+
+        if required_size + destination_size > self.max_rows:
+            raise ConflictError("Storage limit. You can't store more than %s items." % self.max_rows)
 
     def check_items(self, user, items):
         from django.db import connection
@@ -265,6 +292,14 @@ class BaseStorageManager(models.Manager):
                         self._remove_item_to_source_update(cursor, user, item)
         finally:
             cursor.execute("UNLOCK TABLES")
+
+    @property
+    def max_rows(self):
+        return settings.MAX_STORAGE
+
+    @property
+    def max_stack(self):
+        return settings.MAX_AMOUNT
 
     @property
     def table(self):
