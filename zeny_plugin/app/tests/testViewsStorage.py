@@ -1,10 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 
-from .testcases import MyTransactionTestCase
+from .testcases import MyTestCase
 from ..models import User
 
 
-class Storage(MyTransactionTestCase):
+class Storage(MyTestCase):
     fixtures = ['user.json', 'items2.json']
 
     def test_move_first_no_all(self):
@@ -96,7 +96,7 @@ class Storage(MyTransactionTestCase):
         self.assertEqual(storage.amount, 10)
 
 
-class StorageNoStackable(MyTransactionTestCase):
+class StorageNoStackable(MyTestCase):
     fixtures = ['user.json', 'items2.json']
 
     def test_move_first_no_all(self):

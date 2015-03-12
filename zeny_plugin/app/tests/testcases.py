@@ -1,4 +1,4 @@
-from rest_framework.test import APITransactionTestCase, APITestCase
+from rest_framework.test import APITestCase
 
 from ..models import User
 
@@ -11,9 +11,8 @@ class AuthenticationMixin(object):
         self.client.force_authenticate(None)
 
 
-class MyTransactionTestCase(AuthenticationMixin, APITransactionTestCase):
-    def _fixture_teardown(self):
-        super(MyTransactionTestCase, self)._fixture_teardown()
+class MyTestCase(AuthenticationMixin, APITestCase):
+    def tearDown(self):
         for db_name in self._databases_names(include_mirrors=False):
             from django.db import connections
 
@@ -25,7 +24,4 @@ class MyTransactionTestCase(AuthenticationMixin, APITransactionTestCase):
             TRUNCATE `storage_vending`;
             SET FOREIGN_KEY_CHECKS = 1;
             """)
-
-
-class MyTestCase(AuthenticationMixin, APITestCase):
-    pass
+        super(MyTestCase, self).tearDown()

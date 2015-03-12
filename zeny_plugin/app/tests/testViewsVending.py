@@ -1,10 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 
-from .testcases import MyTransactionTestCase, MyTestCase
+from .testcases import MyTestCase
 from ..models import User
 
 
-class Vending(MyTransactionTestCase):
+class Vending(MyTestCase):
     fixtures = ['user.json', 'items.json']
 
     def test_move_first_no_all(self):
@@ -146,7 +146,7 @@ class Vending(MyTransactionTestCase):
         self.assertEqual(vending.zeny, 1000)
 
 
-class VendingNoStackable(MyTransactionTestCase):
+class VendingNoStackable(MyTestCase):
     fixtures = ['user.json', 'items.json']
 
     def test_move_first_no_all(self):
