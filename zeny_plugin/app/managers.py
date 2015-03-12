@@ -1,5 +1,4 @@
 from django.db import models
-from rest_framework.exceptions import ValidationError
 
 from .exceptions import ConflictError
 
@@ -163,7 +162,7 @@ class BaseStorageManager(models.Manager):
 
         cursor.execute(sql, parameters)
         if cursor.rowcount != len(items):
-            raise ValidationError("You doesn't have this items.")  # TODO Verbose error. 409?
+            raise ConflictError("You doesn't have this items.")  # TODO Verbose error.
 
     def _get_user_items(self, cursor, user, items):
         where, having, param_where, param_having = self._where_items_amount(items)
@@ -261,7 +260,7 @@ class BaseStorageManager(models.Manager):
             check_no_char_online(cursor, user)
             self._get_user_items(cursor, user, items)
             if cursor.rowcount != len(items):
-                raise ValidationError("You doesn't have this items.")  # TODO Verbose error. 409?
+                raise ConflictError("You doesn't have this items.")  # TODO Verbose error.
             for row in cursor.fetchall():
                 item = find_item(row, items)
                 if int(row[7]) in [4, 5, 7, 8, 12]:

@@ -151,7 +151,7 @@ class VendingNoLock(MyTestCase):
             }, ]
         self.login()
         response = self.client.post('/user/me/' + value, items, "json")
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
 
     @data('storage/', 'vending/', )
     def test_post_dont_have_so_much(self, value):
@@ -167,7 +167,7 @@ class VendingNoLock(MyTestCase):
             }, ]
         self.login()
         response = self.client.post('/user/me/' + value, items, "json")
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
 
     @data('storage/', 'vending/', )
     def test_post_zero_amount(self, value):
@@ -218,7 +218,7 @@ class VendingNoLock(MyTestCase):
             }, ]
         self.login()
         response = self.client.post('/user/me/' + value, items, "json")
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
 
     @data('vending/', )
     def test_post_bounded_item(self, value):
@@ -234,7 +234,7 @@ class VendingNoLock(MyTestCase):
             }, ]
         self.login()
         response = self.client.post('/user/me/' + value, items, "json")
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
 
     @data('vending/', )
     def test_post_expire_item(self, value):
@@ -250,7 +250,7 @@ class VendingNoLock(MyTestCase):
             }, ]
         self.login()
         response = self.client.post('/user/me/' + value, items, "json")
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
 
     @data('vending/', )
     def test_post_broken_item(self, value):
@@ -266,7 +266,7 @@ class VendingNoLock(MyTestCase):
             }, ]
         self.login()
         response = self.client.post('/user/me/' + value, items, "json")
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
 
     @data('storage/', 'vending/', )
     def test_post_online(self, value):
