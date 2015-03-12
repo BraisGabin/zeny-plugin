@@ -281,7 +281,7 @@ class VendingNoLock(MyTestCase):
                 "card3": 0,
             }, ]
         self.login("s2")
-        response = self.client.post('/user/me/vending/', items, "json")
+        response = self.client.post('/user/me/' + value, items, "json")
         self.assertEqual(response.status_code, 409)
 
 
