@@ -3,23 +3,25 @@ from django.db import models
 from .exceptions import ConflictError
 
 
-def find_item(row, items):
-    for item in items:
-        if int(row[0]) == item['nameid'] and int(row[1]) == item['refine'] and int(row[2]) == item['card0'] and \
-                int(row[3]) == item['card1'] and int(row[4]) == item['card2'] and int(row[5]) == item['card3']:
-            return item
-    raise TypeError("Unknown item")
+def relate_items_rows(rows, items):
+    l = []
+    items = list(items)
+    for row in rows:
+        the_item = None
+        for index, item in enumerate(items):
+            if int(row[0]) == item['nameid'] and int(row[1]) == item['refine'] and int(row[2]) == item['card0'] and \
+                    int(row[3]) == item['card1'] and int(row[4]) == item['card2'] and int(row[5]) == item['card3']:
+                items.pop(index)
+                item['type'] = int(row[6])
+                item['source_amount'] = row[7]
+                item['destination_amount'] = int(row[8]) if row[8] is not None else 0
+                the_item = item
+                break
 
-
-def get_params_item(item):
-    return [
-        item['nameid'],
-        item['refine'],
-        item['card0'],
-        item['card1'],
-        item['card2'],
-        item['card3']
-    ]
+        if the_item is None:
+            raise TypeError("Unknown item")
+        l.append(the_item)
+    return l
 
 
 def check_no_char_online(cursor, user):
@@ -134,36 +136,6 @@ class BaseStorageManager(models.Manager):
         if cursor.rowcount != item['amount']:
             raise TypeError("Critical error, possible dupe")
 
-    def _check_user_have_items(self, cursor, user, items):
-        where, having, param_where, param_having = self._where_items_amount(items)
-
-        sql = """
-            SELECT
-                source.nameid,
-                source.refine,
-                source.card0,
-                source.card1,
-                source.card2,
-                source.card3,
-                SUM(source.amount) AS total_amount
-            FROM """ + self.table + """ AS source
-            WHERE
-            bound = 0 AND
-            expire_time = 0 AND
-            identify != 0 AND
-            account_id = %s AND
-            (""" + where + """)
-            GROUP BY nameid, refine, card0, card1, card2, card3
-            HAVING (""" + having + ")"
-
-        parameters = [user.pk]
-        parameters.extend(param_where)
-        parameters.extend(param_having)
-
-        cursor.execute(sql, parameters)
-        if cursor.rowcount != len(items):
-            raise ConflictError("You doesn't have this items.")  # TODO Verbose error.
-
     def _get_user_items(self, cursor, user, items):
         where, having, param_where, param_having = self._where_items_amount(items)
 
@@ -175,8 +147,8 @@ class BaseStorageManager(models.Manager):
                 source.card1,
                 source.card2,
                 source.card3,
-                SUM(source.amount) AS total_amount,
                 item.type,
+                SUM(source.amount) AS total_amount,
                 destination.amount
             FROM """ + self.table + """ AS source
             INNER JOIN item_db_re AS item ON
@@ -229,7 +201,14 @@ class BaseStorageManager(models.Manager):
                 source.card3 = %s AND
                 SUM(source.amount) >= %s)
             """)
-            params = get_params_item(item)
+            params = [
+                item['nameid'],
+                item['refine'],
+                item['card0'],
+                item['card1'],
+                item['card2'],
+                item['card3']
+            ]
             param_where.extend(params)
             param_having.extend(params)
             param_having.append(item['amount'])
@@ -238,11 +217,21 @@ class BaseStorageManager(models.Manager):
         having = ' OR '.join(having)
         return where, having, param_where, param_having
 
+    def _get_items(self, cursor, user, items):
+        self._get_user_items(cursor, user, items)
+        if cursor.rowcount != len(items):
+            raise ConflictError("You don't have those items.")  # TODO Verbose error.
+        try:
+            items = relate_items_rows(cursor.fetchall(), items)
+        except TypeError:
+            raise ConflictError("You don't have those items.")  # TODO Verbose error.
+        return items
+
     def check_items(self, user, items):
         from django.db import connection
 
         cursor = connection.cursor()
-        self._check_user_have_items(cursor, user, items)
+        self._get_items(cursor, user, items)
 
     def move_items(self, user, items):
         from django.db import connection
@@ -258,22 +247,19 @@ class BaseStorageManager(models.Manager):
                     `""" + self.destination_table + """` AS destination LOW_PRIORITY WRITE,
                     `""" + self.destination_table + """` LOW_PRIORITY WRITE""")
             check_no_char_online(cursor, user)
-            self._get_user_items(cursor, user, items)
-            if cursor.rowcount != len(items):
-                raise ConflictError("You doesn't have this items.")  # TODO Verbose error.
-            for row in cursor.fetchall():
-                item = find_item(row, items)
-                if int(row[7]) in [4, 5, 7, 8, 12]:
+
+            for item in self._get_items(cursor, user, items):
+                if item['type'] in [4, 5, 7, 8, 12]:
                     self._add_no_stackable_item_vending_storage(cursor, user, item)
                     self._remove_no_stackable_item_storage(cursor, user, item)
                 else:
                     # Add to source
-                    if row[8] is None:
+                    if item['destination_amount'] is 0:
                         self._add_item_to_destination_insert(cursor, user, item)
                     else:
                         self._add_item_to_destination_update(cursor, user, item)
                     # Remove to destination
-                    if int(row[6]) == item['amount']:
+                    if item['source_amount'] == item['amount']:
                         self._remove_item_to_source_delete(cursor, user, item)
                     else:
                         self._remove_item_to_source_update(cursor, user, item)
