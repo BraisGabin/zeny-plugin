@@ -41,7 +41,7 @@ class StorageList(UserMe, generics.ListCreateAPIView):
             raise ConflictError("You're connected to the server. please disconnect and retry.")
         Vending.objects.check_items(self.request.user, items)
         Vending.objects.move_items(self.request.user, items)
-        return Response(None, status=204)
+        return Response(status=204)
 
 
 class VendingList(UserMe, generics.ListCreateAPIView):
@@ -65,7 +65,7 @@ class VendingList(UserMe, generics.ListCreateAPIView):
             raise ConflictError("You're connected to the server. please disconnect and retry.")
         Storage.objects.check_items(self.request.user, items)
         Storage.objects.move_items(self.request.user, items)
-        return Response(None, status=204)
+        return Response(status=204)
 
     def put(self, request, *args, **kwargs):
         self.serializer_class = VendingSerializer2
@@ -78,7 +78,7 @@ class VendingList(UserMe, generics.ListCreateAPIView):
         for item in items:
             zeny = item.pop('zeny')
             Vending.objects.filter(**item).update(zeny=zeny)
-        return Response(None, status=204)
+        return Response(status=204)
 
 
 def check_no_repeated_items(items):
