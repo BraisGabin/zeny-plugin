@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'name', 'chars',)
+        fields = ('id', 'name', 'zeny', 'chars',)
 
 
 class StorageSerializer(serializers.ModelSerializer):

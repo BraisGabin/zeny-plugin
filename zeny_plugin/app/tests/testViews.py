@@ -109,6 +109,7 @@ class UserTest(MyTestCase):
         self.assertEquals(content, {
             "id": 1,
             "name": 's1',
+            "zeny": 10000,
             "chars": [
                 {
                     "id": 150000,
