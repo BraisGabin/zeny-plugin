@@ -1,4 +1,5 @@
 import unittest
+import json
 
 from ddt import ddt, data
 from django.conf import settings
@@ -95,6 +96,39 @@ class UserSecurityAccess(MyTestCase):
     def test_put_401_pk(self, value):
         response = self.client.put('/user/1/' + value)
         self.assertEqual(response.status_code, 401)
+
+
+class Char(MyTestCase):
+    fixtures = ['user.json']
+
+    def test_get_200_no_login(self):
+        response = self.client.get('/char/150000/')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEquals(content, {
+            "id": 150000,
+            "name": 'spam',
+        })
+
+    def test_get_200_login(self):
+        self.login()
+        response = self.client.get('/char/150000/')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEquals(content, {
+            "id": 150000,
+            "name": 'spam',
+            "zeny": 10000,
+        })
+
+    def test_get_200_login_other(self):
+        response = self.client.get('/char/150001/')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEquals(content, {
+            "id": 150001,
+            "name": 'spam2',
+        })
 
 
 @ddt

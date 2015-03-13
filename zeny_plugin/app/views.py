@@ -5,10 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .mixins import UserMe
-from .models import User, Storage, Vending
+from .models import User, Char, Storage, Vending
 from .serializers import UserSerializer, StorageSerializer, VendingSerializer
 from zeny_plugin.app.exceptions import ConflictError
-from zeny_plugin.app.serializers import VendingSerializer2
+from zeny_plugin.app.serializers import VendingSerializer2, MyCharSerializer, CharSerializer
 
 
 class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -17,6 +17,17 @@ class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+class CharDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = Char.objects.all()
+    serializer_class = CharSerializer
+
+    def get(self, request, *args, **kwargs):
+        char = self.get_object()
+        if char.account_id == request.user.pk:
+            self.serializer_class = MyCharSerializer
         return self.retrieve(request, *args, **kwargs)
 
 

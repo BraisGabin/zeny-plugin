@@ -5,11 +5,17 @@ from .models import User, Char, Storage, Vending
 class CharSerializer(serializers.ModelSerializer):
     class Meta:
         model = Char
+        fields = ('id', 'name',)
+
+
+class MyCharSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Char
         fields = ('id', 'name', 'zeny',)
 
 
 class UserSerializer(serializers.ModelSerializer):
-    chars = CharSerializer(many=True, read_only=True)
+    chars = MyCharSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
