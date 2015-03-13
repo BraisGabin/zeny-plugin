@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.core.validators
 import zeny_plugin.app.models
+import django.core.validators
 
 
 def get_sql(file_name):
@@ -119,7 +119,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
                 ('nameid', models.IntegerField()),
-                ('amount', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive])),
+                ('amount', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive, django.core.validators.MaxValueValidator(30000)])),
                 ('equip', models.IntegerField()),
                 ('identify', models.IntegerField()),
                 ('refine', models.IntegerField()),
@@ -143,7 +143,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
                 ('nameid', models.IntegerField()),
-                ('amount', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive])),
+                ('amount', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive, django.core.validators.MaxValueValidator(30000)])),
                 ('equip', models.IntegerField()),
                 ('identify', models.IntegerField()),
                 ('refine', models.IntegerField()),

@@ -484,6 +484,28 @@ class VendingCheckLimits(MyTestCase):
         vending = user.vending.get(nameid=502)
         self.assertEqual(vending.amount, 5)
 
+    def test_too_much_amount(self):
+        items = [
+            {
+                "nameid": 502,
+                "amount": settings.MAX_AMOUNT + 1,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        self.login()
+        response = self.client.post('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400, response.data)
+        user = User.objects.get(userid="s1")
+
+        storage = user.storage.get(nameid=502)
+        self.assertEqual(storage.amount, 5)
+
+        vending = user.vending.get(nameid=502)
+        self.assertEqual(vending.amount, 5)
+
     def test_too_expensive(self):
         items = [
             {

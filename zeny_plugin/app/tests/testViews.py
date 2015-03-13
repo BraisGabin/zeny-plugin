@@ -1,6 +1,7 @@
 import unittest
 
 from ddt import ddt, data
+from django.conf import settings
 from rest_framework import serializers
 
 from .testcases import MyTestCase
@@ -158,7 +159,7 @@ class VendingNoLock(MyTestCase):
         items = [
             {
                 "nameid": 501,
-                "amount": 6,
+                "amount": settings.MAX_AMOUNT,
                 "refine": 0,
                 "card0": 0,
                 "card1": 0,
