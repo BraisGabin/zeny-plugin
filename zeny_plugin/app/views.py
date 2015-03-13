@@ -1,6 +1,6 @@
 import itertools
 
-from rest_framework import generics, serializers
+from rest_framework import generics, serializers, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -11,23 +11,23 @@ from zeny_plugin.app.exceptions import ConflictError
 from zeny_plugin.app.serializers import VendingSerializer2
 
 
-class UserDetail(UserMe, generics.RetrieveAPIView):
+class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        return super(UserDetail, self).get(request, *args, **kwargs)
+        return self.retrieve(request, *args, **kwargs)
 
 
-class StorageList(UserMe, generics.ListCreateAPIView):
+class StorageList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = StorageSerializer
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
         self.queryset = Storage.objects.filter(account_id=pk)
-        return super(StorageList, self).get(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.serializer_class = StorageSerializer
@@ -44,14 +44,14 @@ class StorageList(UserMe, generics.ListCreateAPIView):
         return Response(status=204)
 
 
-class VendingList(UserMe, generics.ListCreateAPIView):
+class VendingList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         self.serializer_class = VendingSerializer
         pk = self.kwargs.get('pk')
         self.queryset = Vending.objects.filter(account_id=pk)
-        return super(VendingList, self).get(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.serializer_class = StorageSerializer
