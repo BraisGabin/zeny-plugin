@@ -13,7 +13,7 @@ from .. import views
 class UserSecurityAccess(MyTestCase):
     fixtures = ['user.json']
 
-    @data('', 'storage/', 'vending/', )
+    @data('storage/', 'vending/', )
     def test_get_200_me(self, value):
         self.login()
         response = self.client.get('/user/me/' + value)
@@ -98,7 +98,28 @@ class UserSecurityAccess(MyTestCase):
         self.assertEqual(response.status_code, 401)
 
 
-class Char(MyTestCase):
+class UserTest(MyTestCase):
+    fixtures = ['user.json']
+
+    def test_get_200_me(self):
+        self.login()
+        response = self.client.get('/user/me/')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEquals(content, {
+            "id": 1,
+            "name": 's1',
+            "chars": [
+                {
+                    "id": 150000,
+                    "name": 'spam',
+                    "zeny": 10000,
+                }
+            ],
+        })
+
+
+class CharTest(MyTestCase):
     fixtures = ['user.json']
 
     def test_get_200_no_login(self):
