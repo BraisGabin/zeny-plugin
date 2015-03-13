@@ -18,3 +18,9 @@ CREATE TABLE IF NOT EXISTS `storage_vending` (
   PRIMARY KEY  (`id`),
   KEY `account_id` (`account_id`)
 ) ENGINE=MyISAM;
+
+CREATE TABLE IF NOT EXISTS `zeny` (
+  `id` int(10) unsigned NOT NULL,
+  `zeny` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;

@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import zeny_plugin.app.models
+from django.conf import settings
 import django.core.validators
 
 
@@ -159,6 +160,18 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'storage_vending',
+                'managed': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Zeny',
+            fields=[
+                ('id', models.OneToOneField(related_name='zeny_vending', primary_key=True, db_column=b'id', serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('zeny', models.PositiveIntegerField(default=0, validators=[django.core.validators.MaxValueValidator(1000000000)])),
+            ],
+            options={
+                'db_table': 'zeny',
                 'managed': False,
             },
             bases=(models.Model,),

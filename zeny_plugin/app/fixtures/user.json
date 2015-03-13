@@ -170,5 +170,12 @@
     },
     "model": "app.char",
     "pk": 150001
+  },
+  {
+    "fields": {
+      "zeny": 10000
+    },
+    "model": "app.zeny",
+    "pk": 1
   }
 ]

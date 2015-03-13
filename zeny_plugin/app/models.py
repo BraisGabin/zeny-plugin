@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.signals import user_logged_in
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, update_last_login
@@ -121,6 +121,14 @@ class User(models.Model):
     def online(self):
         return self.chars.exclude(online=0).exists()
 
+    @property
+    def zeny(self):
+        try:
+            zeny = self.zeny_vending.zeny
+        except ObjectDoesNotExist:
+            zeny = 0
+        return zeny
+
 
 class Char(models.Model):
     id = models.PositiveIntegerField(primary_key=True, db_column="char_id")
@@ -233,3 +241,12 @@ class Vending(models.Model):
     class Meta:
         managed = False
         db_table = 'storage_vending'
+
+
+class Zeny(models.Model):
+    id = models.OneToOneField(User, related_name="zeny_vending", primary_key=True, db_column="id")
+    zeny = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(settings.MAX_ZENY)])
+
+    class Meta:
+        managed = False
+        db_table = 'zeny'
