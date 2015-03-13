@@ -152,7 +152,7 @@ class BaseStorageManager(models.Manager):
                 SUM(source.amount) AS total_amount,
                 destination.amount
             FROM """ + self.table + """ AS source
-            INNER JOIN item_db_re AS item ON
+            INNER JOIN """ + self.item_table + """ AS item ON
                 source.nameid = item.id
             LEFT JOIN """ + self.destination_table + """ AS destination ON
                 item.type NOT IN (4, 5, 7, 8, 12) AND
@@ -270,7 +270,7 @@ class BaseStorageManager(models.Manager):
                     `char` LOW_PRIORITY WRITE,
                     `""" + self.table + """` AS source LOW_PRIORITY WRITE,
                     `""" + self.table + """` LOW_PRIORITY WRITE,
-                    `item_db_re` AS item LOW_PRIORITY WRITE,
+                    `""" + self.item_table + """` AS item LOW_PRIORITY WRITE,
                     `""" + self.destination_table + """` AS destination LOW_PRIORITY WRITE,
                     `""" + self.destination_table + """` LOW_PRIORITY WRITE""")
             check_no_char_online(cursor, user)
@@ -300,6 +300,10 @@ class BaseStorageManager(models.Manager):
     @property
     def max_stack(self):
         return settings.MAX_AMOUNT
+
+    @property
+    def item_table(self):
+        return settings.ITEM_TABLE_NAME
 
     @property
     def table(self):

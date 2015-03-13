@@ -98,6 +98,7 @@ STATIC_URL = '/static/'
 
 # Zeny settings
 
+ITEM_TABLE_NAME = 'item_db_re'
 MAX_ZENY = 1000000000
 MAX_STORAGE = 600
 MAX_AMOUNT = 30000
