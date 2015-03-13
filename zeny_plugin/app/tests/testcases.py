@@ -4,8 +4,8 @@ from ..models import User
 
 
 class AuthenticationMixin(object):
-    def login(self, userid="s1"):
-        self.client.force_authenticate(User.objects.get(userid=userid))
+    def login(self, account="s1"):
+        self.client.force_authenticate(User.objects.get(name=account))
 
     def logout(self):
         self.client.force_authenticate(None)

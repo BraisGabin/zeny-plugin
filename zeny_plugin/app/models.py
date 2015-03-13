@@ -19,8 +19,8 @@ def strictly_positive(value):
 
 
 class User(models.Model):
-    account_id = models.PositiveIntegerField(primary_key=True)
-    userid = models.CharField(max_length=23, unique=True)
+    id = models.PositiveIntegerField(primary_key=True, db_column="account_id")
+    name = models.CharField(max_length=23, unique=True, db_column="userid")
     user_pass = models.CharField(max_length=32)
     sex = models.CharField(max_length=1)
     email = models.CharField(max_length=39)
@@ -44,7 +44,7 @@ class User(models.Model):
 
     objects = BaseUserManager()
 
-    USERNAME_FIELD = 'userid'
+    USERNAME_FIELD = 'name'
 
     class Meta:
         managed = False
@@ -60,7 +60,7 @@ class User(models.Model):
 
     def get_username(self):
         """Return the identifying username for this User"""
-        return self.userid
+        return self.name
 
     def __str__(self):
         return self.get_username()
@@ -123,7 +123,7 @@ class User(models.Model):
 
 
 class Char(models.Model):
-    char_id = models.PositiveIntegerField(primary_key=True)
+    id = models.PositiveIntegerField(primary_key=True, db_column="char_id")
     account = models.ForeignKey(User, related_name="chars", db_column="account_id")
     char_num = models.IntegerField()
     name = models.CharField(unique=True, max_length=30)

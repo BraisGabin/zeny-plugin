@@ -5,7 +5,7 @@ from .models import User, Char, Storage, Vending
 class CharSerializer(serializers.ModelSerializer):
     class Meta:
         model = Char
-        fields = ('char_id', 'name', 'zeny',)
+        fields = ('id', 'name', 'zeny',)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('account_id', 'userid', 'chars',)
+        fields = ('id', 'name', 'chars',)
 
 
 class StorageSerializer(serializers.ModelSerializer):

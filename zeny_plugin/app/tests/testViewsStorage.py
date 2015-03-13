@@ -23,7 +23,7 @@ class Storage(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         vending = user.vending.get(nameid=501)
         self.assertEqual(vending.amount, 4)
@@ -45,7 +45,7 @@ class Storage(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         with self.assertRaises(ObjectDoesNotExist):
             user.vending.get(nameid=501)
@@ -68,7 +68,7 @@ class Storage(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         vending = user.vending.get(nameid=502)
         self.assertEqual(vending.amount, 4)
@@ -91,7 +91,7 @@ class Storage(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         with self.assertRaises(ObjectDoesNotExist):
             user.vending.get(nameid=502)
@@ -117,7 +117,7 @@ class StorageNoStackable(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         self.assertEqual(user.vending.filter(nameid=1201).count(), 2)
         for vending in user.vending.filter(nameid=1201):
@@ -141,7 +141,7 @@ class StorageNoStackable(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         self.assertEqual(user.vending.filter(nameid=1201).count(), 0)
 
@@ -163,7 +163,7 @@ class StorageNoStackable(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         self.assertEqual(user.vending.filter(nameid=1202).count(), 2)
         for vending in user.vending.filter(nameid=1202):
@@ -187,7 +187,7 @@ class StorageNoStackable(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 204, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         self.assertEqual(user.vending.filter(nameid=1202).count(), 0)
 
@@ -214,7 +214,7 @@ class StorageCheckLimits(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 409, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         vending = user.vending.get(nameid=501)
         self.assertEqual(vending.amount, 5)
@@ -237,7 +237,7 @@ class StorageCheckLimits(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 409, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         self.assertEqual(user.vending.filter(nameid=1202).count(), 3)
         for vending in user.vending.filter(nameid=1202):
@@ -262,7 +262,7 @@ class StorageCheckLimits(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 409, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         vending = user.vending.get(nameid=502)
         self.assertEqual(vending.amount, 5)
@@ -284,7 +284,7 @@ class StorageCheckLimits(MyTestCase):
         self.login()
         response = self.client.post('/user/me/storage/', items, "json")
         self.assertEqual(response.status_code, 400, response.data)
-        user = User.objects.get(userid="s1")
+        user = User.objects.get(name="s1")
 
         vending = user.vending.get(nameid=502)
         self.assertEqual(vending.amount, 5)

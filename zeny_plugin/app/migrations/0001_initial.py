@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
-                ('account_id', models.PositiveIntegerField(serialize=False, primary_key=True)),
-                ('userid', models.CharField(unique=True, max_length=23)),
+                ('id', models.PositiveIntegerField(serialize=False, primary_key=True, db_column=b'account_id')),
+                ('name', models.CharField(unique=True, max_length=23, db_column=b'userid')),
                 ('user_pass', models.CharField(max_length=32)),
                 ('sex', models.CharField(max_length=1)),
                 ('email', models.CharField(max_length=39)),
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Char',
             fields=[
-                ('char_id', models.PositiveIntegerField(serialize=False, primary_key=True)),
+                ('id', models.PositiveIntegerField(serialize=False, primary_key=True, db_column=b'char_id')),
                 ('char_num', models.IntegerField()),
                 ('name', models.CharField(unique=True, max_length=30)),
                 ('class_field', models.IntegerField(db_column=b'class')),
