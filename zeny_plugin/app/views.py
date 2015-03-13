@@ -1,23 +1,14 @@
 import itertools
-from rest_framework import generics, serializers, views
-from rest_framework.exceptions import PermissionDenied
+
+from rest_framework import generics, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from .mixins import UserMe
 from .models import User, Storage, Vending
 from .serializers import UserSerializer, StorageSerializer, VendingSerializer
 from zeny_plugin.app.exceptions import ConflictError
 from zeny_plugin.app.serializers import VendingSerializer2
-
-
-class UserMe(views.APIView):
-    def initial(self, request, *args, **kwargs):
-        super(UserMe, self).initial(request, *args, **kwargs)
-
-        pk = self.kwargs['pk']
-        if pk == 'me':
-            self.kwargs['pk'] = self.request.user.pk
-        elif self.request.user.pk != int(pk):
-            raise PermissionDenied()
 
 
 class UserDetail(UserMe, generics.RetrieveAPIView):
