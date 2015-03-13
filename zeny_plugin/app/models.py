@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.signals import user_logged_in
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, update_last_login
 from django.utils.crypto import salted_hmac
@@ -224,7 +226,7 @@ class Vending(models.Model):
     expire_time = models.IntegerField()
     bound = models.IntegerField()
     unique_id = models.BigIntegerField()
-    zeny = models.PositiveIntegerField(default=0)
+    zeny = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(settings.MAX_ZENY)])
 
     objects = VendingManager()
 

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.test.utils import override_settings
 
@@ -393,7 +394,7 @@ class VendingZeny(MyTestCase):
                 "card1": 0,
                 "card2": 0,
                 "card3": 0,
-                "zeny": 2000,
+                "zeny": settings.MAX_ZENY,
             }, ]
         self.login()
         response = self.client.put('/user/me/vending/', items, "json")
@@ -406,7 +407,7 @@ class VendingZeny(MyTestCase):
         self.assertEqual(item.zeny, 1500)
         items = user.vending.filter(nameid=1203)
         for item in items:
-            self.assertEqual(item.zeny, 2000)
+            self.assertEqual(item.zeny, settings.MAX_ZENY)
 
 
 class VendingCheckLimits(MyTestCase):
@@ -483,3 +484,44 @@ class VendingCheckLimits(MyTestCase):
         vending = user.vending.get(nameid=502)
         self.assertEqual(vending.amount, 5)
 
+    def test_too_expensive(self):
+        items = [
+            {
+                "nameid": 502,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 1000,
+            },
+            {
+                "nameid": 503,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": 1500,
+            },
+            {
+                "nameid": 1203,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+                "zeny": settings.MAX_ZENY + 1,
+            }, ]
+        self.login()
+        response = self.client.put('/user/me/vending/', items, "json")
+        self.assertEqual(response.status_code, 400, response.data)
+        user = User.objects.get(userid="s1")
+
+        item = user.vending.get(nameid=502)
+        self.assertEqual(item.zeny, 0)
+        item = user.vending.get(nameid=503)
+        self.assertEqual(item.zeny, 1000)
+        items = user.vending.filter(nameid=1203)
+        for item in items:
+            self.assertEqual(item.zeny, 1000)

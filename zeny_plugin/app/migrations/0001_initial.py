@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.core.validators
 import zeny_plugin.app.models
 
 
@@ -154,7 +155,7 @@ class Migration(migrations.Migration):
                 ('expire_time', models.IntegerField()),
                 ('bound', models.IntegerField()),
                 ('unique_id', models.BigIntegerField()),
-                ('zeny', models.PositiveIntegerField(default=0)),
+                ('zeny', models.PositiveIntegerField(default=0, validators=[django.core.validators.MaxValueValidator(1000000000)])),
             ],
             options={
                 'db_table': 'storage_vending',
