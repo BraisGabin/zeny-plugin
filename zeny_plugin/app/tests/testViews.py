@@ -152,6 +152,10 @@ class CharTest(MyTestCase):
             "name": 'spam2',
         })
 
+    def test_get_404(self):
+        response = self.client.get('/char/150009/')
+        self.assertEqual(response.status_code, 404)
+
 
 @ddt
 class VendingNoLock(MyTestCase):
