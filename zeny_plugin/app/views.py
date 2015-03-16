@@ -1,14 +1,15 @@
 import itertools
 
 from rest_framework import generics, serializers, mixins
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .mixins import UserMe
 from .models import User, Char, Storage, Vending
 from .serializers import UserSerializer, StorageSerializer, VendingSerializer
 from zeny_plugin.app.exceptions import ConflictError
-from zeny_plugin.app.serializers import VendingSerializer2, MyCharSerializer, CharSerializer
+from zeny_plugin.app.serializers import VendingSerializer2, MyCharSerializer, CharSerializer, ZenySerializer
 
 
 class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -23,12 +24,27 @@ class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
 class CharDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = Char.objects.all()
     serializer_class = CharSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
         char = self.get_object()
         if char.account_id == request.user.pk:
             self.serializer_class = MyCharSerializer
         return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *arg, **args):
+        char = self.get_object()
+        if char.account_id != self.request.user.pk:
+            raise PermissionDenied()
+        if char.online:
+            raise ConflictError("You're connected to the server with the PJ %s, please disconnect and retry."
+                                % char.name)
+        self.serializer_class = ZenySerializer
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        zeny = serializer.data['zeny']
+        char.move_zeny(zeny)
+        return Response(status=204)
 
 
 class StorageList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):

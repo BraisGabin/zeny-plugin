@@ -6,6 +6,8 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, update_last_login
 from django.utils.crypto import salted_hmac
 
+from zeny_plugin.app.exceptions import ConflictError
+
 from .managers import StorageManager, VendingManager
 
 
@@ -192,6 +194,68 @@ class Char(models.Model):
     class Meta:
         managed = False
         db_table = 'char'
+
+    def move_zeny(self, zeny):
+        Char.check_zeny(zeny, self.zeny, self.account.zeny, self.name)
+
+        user_id = self.account_id
+
+        from django.db import connection
+
+        cursor = connection.cursor()
+        try:
+            cursor.execute("""
+                    LOCK TABLES
+                    `char` LOW_PRIORITY WRITE,
+                    `zeny` LOW_PRIORITY WRITE""")
+
+            cursor.execute("SELECT zeny FROM `char` WHERE char_id = %s AND online = 0", [self.id])
+            if cursor.rowcount == 0:
+                raise ConflictError("You're connected to the server with the PJ %s, please disconnect and retry."
+                                    % self.name)
+            char_zeny = cursor.fetchone()[0]
+            cursor.execute("SELECT zeny FROM `zeny` WHERE id = %s", [user_id])
+            if cursor.rowcount == 0:
+                user_zeny = 0
+            else:
+                user_zeny = int(cursor.fetchone()[0])
+            Char.check_zeny(zeny, char_zeny, user_zeny, self.name)
+            if zeny < 0:
+                cursor.execute("""INSERT INTO `zeny` (id, zeny) VALUES (%s, %s)
+                    ON DUPLICATE KEY UPDATE zeny = zeny + %s
+                """, [
+                    user_id,
+                    -zeny,
+                    -zeny,
+                ])
+                cursor.execute("""UPDATE `char` SET zeny = zeny - %s WHERE char_id = %s""", [
+                    -zeny,
+                    self.id,
+                ])
+            else:
+                cursor.execute("""UPDATE `char` SET zeny = zeny + %s WHERE char_id = %s""", [
+                    zeny,
+                    self.id,
+                ])
+                cursor.execute("""UPDATE `zeny` SET zeny = zeny - %s WHERE id = %s""", [
+                    zeny,
+                    user_id,
+                ])
+        finally:
+            cursor.execute("UNLOCK TABLES")
+
+    @staticmethod
+    def check_zeny(zeny, char_zeny, user_zeny, char_name):
+        if zeny < 0:
+            if char_zeny < -zeny:
+                raise ConflictError("%s doesn't have so much money." % char_name)
+            if user_zeny + -zeny > settings.MAX_ZENY:
+                raise ConflictError("You can't have so much money. Limit %d." % settings.MAX_ZENY)
+        else:
+            if char_zeny < zeny:
+                raise ConflictError("You don't have so much money.")
+            if user_zeny + zeny > settings.MAX_ZENY:
+                raise ConflictError("%s can't have so much money. Limit %d." % (char_name, settings.MAX_ZENY))
 
 
 class Storage(models.Model):
