@@ -9,13 +9,14 @@ from .mixins import UserMe
 from .models import User, Char, Storage, Vending
 from .serializers import UserSerializer, StorageSerializer, VendingSerializer
 from zeny_plugin.app.exceptions import ConflictError
+from zeny_plugin.app.permissions import OnlyOwner
 from zeny_plugin.app.serializers import VendingSerializer2, MyCharSerializer, CharSerializer, ZenySerializer
 
 
 class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (OnlyOwner,)
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -49,7 +50,7 @@ class CharDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
 
 class StorageList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = StorageSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (OnlyOwner,)
 
     def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
@@ -72,7 +73,7 @@ class StorageList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):
 
 
 class VendingList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (OnlyOwner,)
 
     def get(self, request, *args, **kwargs):
         self.serializer_class = VendingSerializer
