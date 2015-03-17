@@ -113,6 +113,23 @@ class User(models.Model):
         # Simplest possible answer: Yes, always
         return True
 
+    @staticmethod
+    def add_zeny(cursor, user_id, zeny):
+        cursor.execute("""INSERT INTO `zeny` (id, zeny) VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE zeny = zeny + %s
+        """, [
+            user_id,
+            zeny,
+            zeny,
+        ])
+
+    @staticmethod
+    def remove_zeny(cursor, user_id, zeny):
+        cursor.execute("""UPDATE `zeny` SET zeny = zeny - %s WHERE id = %s""", [
+            zeny,
+            user_id,
+        ])
+
     @property
     def is_staff(self):
         "Is the user a member of staff?"
@@ -221,28 +238,33 @@ class Char(models.Model):
                 user_zeny = int(cursor.fetchone()[0])
             Char.check_zeny(zeny, char_zeny, user_zeny, self.name)
             if zeny < 0:
-                cursor.execute("""INSERT INTO `zeny` (id, zeny) VALUES (%s, %s)
-                    ON DUPLICATE KEY UPDATE zeny = zeny + %s
-                """, [
-                    user_id,
-                    -zeny,
-                    -zeny,
-                ])
-                cursor.execute("""UPDATE `char` SET zeny = zeny - %s WHERE char_id = %s""", [
-                    -zeny,
-                    self.id,
-                ])
+                User.add_zeny(cursor, user_id, -zeny)
+                self._remove_zeny(cursor, -zeny)
             else:
-                cursor.execute("""UPDATE `char` SET zeny = zeny + %s WHERE char_id = %s""", [
-                    zeny,
-                    self.id,
-                ])
-                cursor.execute("""UPDATE `zeny` SET zeny = zeny - %s WHERE id = %s""", [
-                    zeny,
-                    user_id,
-                ])
+                self._add_zeny(cursor, zeny)
+                User.remove_zeny(cursor, user_id, zeny)
         finally:
             cursor.execute("UNLOCK TABLES")
+
+    def _add_zeny(self, cursor, zeny):
+        Char.add_zeny(cursor, self.pk, zeny)
+
+    @staticmethod
+    def add_zeny(cursor, char_id, zeny):
+        cursor.execute("""UPDATE `char` SET zeny = zeny + %s WHERE char_id = %s""", [
+            zeny,
+            char_id,
+        ])
+
+    def _remove_zeny(self, cursor, zeny):
+        Char.remove_zeny(cursor, self.pk, zeny)
+
+    @staticmethod
+    def remove_zeny(cursor, char_id, zeny):
+        cursor.execute("""UPDATE `char` SET zeny = zeny - %s WHERE char_id = %s""", [
+            zeny,
+            char_id,
+        ])
 
     @staticmethod
     def check_zeny(zeny, char_zeny, user_zeny, char_name):
