@@ -1,14 +1,14 @@
 from django.conf import settings
 from django.contrib.auth.signals import user_logged_in
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, update_last_login
 from django.utils.crypto import salted_hmac
+from rest_framework.exceptions import ValidationError
 
 from zeny_plugin.app.exceptions import ConflictError
-
-from .managers import StorageManager, VendingManager
+from zeny_plugin.app.managers import StorageManager, VendingManager
 
 
 # FIXME This is really ugly
@@ -147,6 +147,126 @@ class User(models.Model):
         except ObjectDoesNotExist:
             zeny = 0
         return zeny
+
+    def buy(self, data, seller):
+        from django.db import connection
+
+        try:
+            stackable = Item.objects.get(id=data['nameid']).stackable
+        except ObjectDoesNotExist:
+            raise ValidationError("The item doesn't exist.")
+
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute("""
+                    LOCK TABLES
+                    `storage_vending` WRITE,
+                    `storage_vending` AS source WRITE,
+                    `zeny` WRITE""")
+            seller_current, buyer_current = self.current_item_state(cursor, seller, data)
+
+            if seller_current is None:
+                raise ValidationError("The seller doesn't have this item.")
+            if seller_current['amount'] < data['amount']:
+                raise ValidationError("The seller doesn't have enough items.")
+            if seller_current['zeny'] != data['zeny']:
+                raise ValidationError("The seller sells the item %s zeny." % seller_current['zeny'])
+
+            if stackable:
+                if buyer_current['amount'] == 0:
+                    self.can_add(cursor, 1)
+                elif buyer_current['amount'] + data['amount'] > settings.MAX_AMOUNT:
+                    raise ConflictError("Stack limit. You can't stack more than %d items." % settings.MAX_AMOUNT)
+            else:
+                self.can_add(cursor, data['amount'])
+
+            cursor.execute("SELECT id, zeny FROM `zeny` WHERE id = %s OR id = %s", [self.pk, seller.pk])
+            buyer_zeny = 0
+            seller_zeny = 0
+            for item in cursor.fetchall():
+                if int(item[0]) == self.pk:
+                    buyer_zeny = int(item[1])
+                else:
+                    seller_zeny = int(item[1])
+            bill_zeny = data['amount'] * data['zeny']
+            if buyer_zeny < bill_zeny:
+                raise ConflictError("You don't have so much money.")
+            if seller_zeny + bill_zeny > settings.MAX_ZENY:
+                raise ConflictError("Seller can't have so much money. Limit %d." % settings.MAX_ZENY)
+
+            if stackable:
+                if buyer_current['amount'] > 0:
+                    Vending.update_amount_stackable_item(cursor, self.pk, data['amount'], data)
+                    if seller_current['amount'] == data['amount']:
+                        Vending.delete_stackable_item(cursor, seller.pk, data)
+                    else:
+                        Vending.update_amount_stackable_item(cursor, seller.pk, -data['amount'], data)
+                else:
+                    if seller_current['amount'] == data['amount']:
+                        Vending.change_owner_stakable_items(cursor, self.pk, seller.pk, data)
+                    else:
+                        Vending.copy_stackable_item(cursor, self.pk, seller.pk, data['amount'], data)
+                        Vending.update_amount_stackable_item(cursor, seller.pk, -data['amount'], data)
+            else:
+                Vending.change_owner_no_stakable_items(cursor, self.pk, seller.pk, buyer_current['zeny'], data['amount'], data)
+            User.remove_zeny(cursor, self.pk, bill_zeny)
+            User.add_zeny(cursor, seller.pk, bill_zeny)
+        finally:
+            cursor.execute("UNLOCK TABLES")
+
+    def current_item_state(self, cursor, seller, item):
+        cursor.execute("""
+            SELECT account_id, SUM(amount), MAX(zeny)
+            FROM storage_vending
+            WHERE
+                (account_id = %s OR account_id = %s) AND
+                nameid = %s AND
+                refine = %s AND
+                card0 = %s AND
+                card1 = %s AND
+                card2 = %s AND
+                card3 = %s
+            GROUP BY account_id, nameid, refine, card0, card1, card2, card3
+        """, [
+            seller.pk,
+            self.pk,
+            item['nameid'],
+            item['refine'],
+            item['card0'],
+            item['card1'],
+            item['card2'],
+            item['card3'],
+        ])
+        seller_current = None
+        buyer_current = None
+        for item in cursor.fetchall():
+            d = {
+                'amount': int(item[1]),
+                'zeny': int(item[2]),
+            }
+            if int(item[0]) == seller.pk:
+                seller_current = d
+            else:
+                buyer_current = d
+        if buyer_current is None:
+            buyer_current = {
+                'amount': 0,
+                'zeny': 0,
+            }
+
+        return seller_current, buyer_current
+
+    def can_add(self, cursor, amount):
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM storage_vending
+            WHERE account_id = %s
+        """, [
+            self.pk
+        ])
+        if int(cursor.fetchone()[0]) + amount > settings.MAX_STORAGE:
+            raise ConflictError("Storage limit. You can't store more than %s items." % settings.MAX_STORAGE)
 
 
 class Char(models.Model):
@@ -328,6 +448,122 @@ class Vending(models.Model):
         managed = False
         db_table = 'storage_vending'
 
+    @staticmethod
+    def copy_stackable_item(cursor, new_owner_id, old_owner_id, amount, item):
+        cursor.execute("""INSERT INTO storage_vending
+                (account_id, nameid, amount, equip, identify, refine, attribute, card0, card1, card2, card3, expire_time, bound, unique_id, zeny)
+                (
+                    SELECT %s, nameid, %s, equip, identify, refine, attribute, card0, card1, card2, card3, expire_time, bound, unique_id, 0
+                    FROM storage_vending AS source
+                    WHERE
+                    account_id = %s AND
+                    nameid = %s AND
+                    refine = %s AND
+                    card0 = %s AND
+                    card1 = %s AND
+                    card2 = %s AND
+                    card3 = %s
+                )""", [
+            new_owner_id,
+            amount,
+            old_owner_id,
+            item['nameid'],
+            item['refine'],
+            item['card0'],
+            item['card1'],
+            item['card2'],
+            item['card3']
+        ])
+
+    @staticmethod
+    def update_amount_stackable_item(cursor, user_id, amount, item):
+        cursor.execute("""UPDATE storage_vending SET amount = amount + %s
+            WHERE
+                account_id = %s AND
+                nameid = %s AND
+                refine = %s AND
+                card0 = %s AND
+                card1 = %s AND
+                card2 = %s AND
+                card3 = %s
+            """, [
+            amount,
+            user_id,
+            item['nameid'],
+            item['refine'],
+            item['card0'],
+            item['card1'],
+            item['card2'],
+            item['card3'],
+        ])
+
+    @staticmethod
+    def change_owner_stakable_items(cursor, new_owner_id, old_owner_id, item):
+        cursor.execute("""UPDATE storage_vending SET account_id = %s, zeny = 0
+            WHERE
+                account_id = %s AND
+                nameid = %s AND
+                refine = %s AND
+                card0 = %s AND
+                card1 = %s AND
+                card2 = %s AND
+                card3 = %s
+            """, [
+            new_owner_id,
+            old_owner_id,
+            item['nameid'],
+            item['refine'],
+            item['card0'],
+            item['card1'],
+            item['card2'],
+            item['card3'],
+        ])
+
+    @staticmethod
+    def delete_stackable_item(cursor, user_id, item):
+        cursor.execute("""DELETE FROM storage_vending
+            WHERE
+                account_id = %s AND
+                nameid = %s AND
+                refine = %s AND
+                card0 = %s AND
+                card1 = %s AND
+                card2 = %s AND
+                card3 = %s
+            """, [
+            user_id,
+            item['nameid'],
+            item['refine'],
+            item['card0'],
+            item['card1'],
+            item['card2'],
+            item['card3'],
+        ])
+
+    @staticmethod
+    def change_owner_no_stakable_items(cursor, new_owner_id, old_owner_id, new_zeny, amount, item):
+        cursor.execute("""UPDATE storage_vending SET account_id = %s, zeny = %s
+            WHERE
+                account_id = %s AND
+                nameid = %s AND
+                refine = %s AND
+                card0 = %s AND
+                card1 = %s AND
+                card2 = %s AND
+                card3 = %s
+            LIMIT %s""", [
+            new_owner_id,
+            new_zeny,
+            old_owner_id,
+            item['nameid'],
+            item['refine'],
+            item['card0'],
+            item['card1'],
+            item['card2'],
+            item['card3'],
+            amount,
+        ])
+
 
 class Zeny(models.Model):
     id = models.OneToOneField(User, related_name="zeny_vending", primary_key=True, db_column="id")
@@ -336,3 +572,16 @@ class Zeny(models.Model):
     class Meta:
         managed = False
         db_table = 'zeny'
+
+
+class Item(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)
+    type = models.PositiveIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = settings.ITEM_TABLE_NAME
+
+    @property
+    def stackable(self):
+        return self.type not in [4, 5, 7, 8, 12]

@@ -1,7 +1,8 @@
 import itertools
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import generics, serializers, mixins
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
@@ -9,17 +10,29 @@ from .mixins import UserMe
 from .models import User, Char, Storage, Vending
 from .serializers import UserSerializer, StorageSerializer, VendingSerializer
 from zeny_plugin.app.exceptions import ConflictError
-from zeny_plugin.app.permissions import OnlyOwner
-from zeny_plugin.app.serializers import VendingSerializer2, MyCharSerializer, CharSerializer, ZenySerializer
+from zeny_plugin.app.models import Item
+from zeny_plugin.app.permissions import OnlyOwner, BuyOrOnlyOwner
+from zeny_plugin.app.serializers import VendingSerializer2, MyCharSerializer, CharSerializer, ZenySerializer, \
+    BuySerializer
 
 
 class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (OnlyOwner,)
+    permission_classes = (BuyOrOnlyOwner,)
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        seller = self.get_object()
+        self.serializer_class = BuySerializer
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
+        buyer = request.user
+        buyer.buy(data, seller)
+        return Response(status=204)
 
 
 class CharDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):

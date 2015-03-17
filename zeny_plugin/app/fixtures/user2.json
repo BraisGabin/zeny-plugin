@@ -1,0 +1,88 @@
+[
+  {
+    "fields": {
+      "character_slots": 0,
+      "lastlogin": "1970-01-01T00:00:00Z",
+      "unban_time": 0,
+      "old_group": 0,
+      "last_ip": "",
+      "name": "s1",
+      "pincode": "",
+      "logincount": 0,
+      "sex": "S",
+      "state": 0,
+      "pincode_change": 0,
+      "birthdate": "1970-01-01",
+      "user_pass": "p1",
+      "expiration_time": 0,
+      "group_id": 0,
+      "email": "athena@athena.com",
+      "bank_vault": 0,
+      "vip_time": 0
+    },
+    "model": "app.user",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "character_slots": 0,
+      "lastlogin": "1970-01-01T00:00:00Z",
+      "unban_time": 0,
+      "old_group": 0,
+      "last_ip": "",
+      "name": "s2",
+      "pincode": "",
+      "logincount": 0,
+      "sex": "S",
+      "state": 0,
+      "pincode_change": 0,
+      "birthdate": "1970-01-01",
+      "user_pass": "p2",
+      "expiration_time": 0,
+      "group_id": 0,
+      "email": "athena2@athena.com",
+      "bank_vault": 0,
+      "vip_time": 0
+    },
+    "model": "app.user",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "character_slots": 0,
+      "lastlogin": "1970-01-01T00:00:00Z",
+      "unban_time": 0,
+      "old_group": 0,
+      "last_ip": "",
+      "name": "s3",
+      "pincode": "",
+      "logincount": 0,
+      "sex": "S",
+      "state": 0,
+      "pincode_change": 0,
+      "birthdate": "1970-01-01",
+      "user_pass": "p2",
+      "expiration_time": 0,
+      "group_id": 0,
+      "email": "athena3@athena.com",
+      "bank_vault": 0,
+      "vip_time": 0
+    },
+    "model": "app.user",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "zeny": 10000
+    },
+    "model": "app.zeny",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "zeny": 10000
+    },
+    "model": "app.zeny",
+    "pk": 3
+  }
+]

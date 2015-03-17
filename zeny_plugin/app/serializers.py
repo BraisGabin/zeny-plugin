@@ -54,3 +54,25 @@ class ZenySerializer(serializers.Serializer):
         validators=[
             not_zero,
         ])
+
+
+class BuySerializer(serializers.Serializer):
+    nameid = serializers.IntegerField(min_value=0)
+    refine = serializers.IntegerField(min_value=0)
+    card0 = serializers.IntegerField(min_value=0)
+    card1 = serializers.IntegerField(min_value=0)
+    card2 = serializers.IntegerField(min_value=0)
+    card3 = serializers.IntegerField(min_value=0)
+    amount = serializers.IntegerField(
+        min_value=1,
+        max_value=settings.MAX_AMOUNT
+    )
+    zeny = serializers.IntegerField(
+        min_value=1,
+        max_value=settings.MAX_ZENY,
+    )
+
+    def validate(self, data):
+        if data['amount'] * data['zeny'] > settings.MAX_ZENY:
+            raise serializers.ValidationError("amount x zeny > %d" % settings.MAX_ZENY)
+        return data

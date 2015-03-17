@@ -116,6 +116,18 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='Item',
+            fields=[
+                ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
+                ('type', models.PositiveIntegerField()),
+            ],
+            options={
+                'db_table': 'item_db_re',
+                'managed': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='Storage',
             fields=[
                 ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
