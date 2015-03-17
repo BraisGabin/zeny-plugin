@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
 
 from .models import User, Char, Storage, Vending
@@ -49,8 +48,9 @@ class VendingSerializer2(serializers.ModelSerializer):
 
 
 class ZenySerializer(serializers.Serializer):
-    zeny = serializers.IntegerField(validators=[
-        MaxValueValidator(settings.MAX_ZENY),
-        MinValueValidator(-settings.MAX_ZENY),
-        not_zero,
-    ])
+    zeny = serializers.IntegerField(
+        min_value=-settings.MAX_ZENY,
+        max_value=settings.MAX_ZENY,
+        validators=[
+            not_zero,
+        ])
