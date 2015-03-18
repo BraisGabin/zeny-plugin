@@ -215,6 +215,13 @@ class User(models.Model):
         finally:
             cursor.execute("UNLOCK TABLES")
 
+        log = VendingLog(
+            seller_id=seller.pk,
+            buyer_id=self.pk,
+            **data
+        )
+        log.save()
+
     def current_item_state(self, cursor, seller, item):
         cursor.execute("""
             SELECT account_id, SUM(amount), MAX(zeny)
@@ -585,3 +592,22 @@ class Item(models.Model):
     @property
     def stackable(self):
         return self.type not in [4, 5, 7, 8, 12]
+
+
+class VendingLog(models.Model):
+    id = models.AutoField(primary_key=True)
+    seller = models.ForeignKey(User, related_name="sales", db_column="seller_account_id")
+    buyer = models.ForeignKey(User, related_name="shopping", db_column="buyer_account_id")
+    nameid = models.IntegerField()
+    refine = models.IntegerField()
+    card0 = models.IntegerField()
+    card1 = models.IntegerField()
+    card2 = models.IntegerField()
+    card3 = models.IntegerField()
+    amount = models.PositiveIntegerField(validators=[strictly_positive, MaxValueValidator(settings.MAX_AMOUNT)])
+    zeny = models.PositiveIntegerField(validators=[strictly_positive, MaxValueValidator(settings.MAX_ZENY)])
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'vending_log'

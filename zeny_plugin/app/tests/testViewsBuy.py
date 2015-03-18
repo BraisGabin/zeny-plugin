@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.test.utils import override_settings
+from django.utils import timezone
 
 from .testcases import MyTestCase
 from ..models import User
+from zeny_plugin.app.models import VendingLog
 
 
 class BuyTest(MyTestCase):
@@ -383,7 +385,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -396,6 +400,8 @@ class BuyTest(MyTestCase):
         item = seller.vending.get(nameid=501)
         self.assertEqual(item.amount, 2)
         self.assertEqual(seller.zeny, 3000)
+
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())
 
     @override_settings(MAX_ZENY=13000)
     def test_buy_no_all_no_have_first(self):
@@ -410,7 +416,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/3/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -424,6 +432,8 @@ class BuyTest(MyTestCase):
         self.assertEqual(item.amount, 2)
         self.assertEqual(seller.zeny, 13000)
 
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=3, date__range=(before, after), **buy).exists())
+
     def test_buy_all_no_have(self):
         buy = {
             "nameid": 501,
@@ -436,7 +446,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -451,6 +463,8 @@ class BuyTest(MyTestCase):
             seller.vending.get(nameid=501)
         self.assertEqual(seller.zeny, 5000)
 
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())
+
     def test_buy_no_all_have(self):
         buy = {
             "nameid": 502,
@@ -463,7 +477,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -476,6 +492,8 @@ class BuyTest(MyTestCase):
         item = seller.vending.get(nameid=502)
         self.assertEqual(item.amount, 2)
         self.assertEqual(seller.zeny, 3000)
+
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())
 
     @override_settings(MAX_STORAGE=4)
     def test_buy_all_have(self):
@@ -490,7 +508,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -505,6 +525,8 @@ class BuyTest(MyTestCase):
             seller.vending.get(nameid=502)
         self.assertEqual(seller.zeny, 5000)
 
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())
+
     def test_buy_no_all_no_have_no_stack(self):
         buy = {
             "nameid": 1101,
@@ -517,7 +539,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -535,6 +559,8 @@ class BuyTest(MyTestCase):
             self.assertEqual(item.amount, 1)
         self.assertEqual(seller.zeny, 2000)
 
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())
+
     def test_buy_all_no_have_no_stack(self):
         buy = {
             "nameid": 1101,
@@ -547,7 +573,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -563,6 +591,8 @@ class BuyTest(MyTestCase):
         self.assertEqual(items.count(), 0)
         self.assertEqual(seller.zeny, 3000)
 
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())
+
     def test_buy_no_all_have_no_stack(self):
         buy = {
             "nameid": 1201,
@@ -575,7 +605,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -593,6 +625,8 @@ class BuyTest(MyTestCase):
             self.assertEqual(item.amount, 1)
         self.assertEqual(seller.zeny, 2000)
 
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())
+
     def test_buy_all_have_no_stack(self):
         buy = {
             "nameid": 1201,
@@ -605,7 +639,9 @@ class BuyTest(MyTestCase):
             "zeny": 1000,
         }
         self.login()
+        before = timezone.now()
         response = self.client.put('/user/2/', buy, "json")
+        after = timezone.now()
         self.assertEqual(response.status_code, 204)
 
         buyer = User.objects.get(name="s1")
@@ -620,3 +656,5 @@ class BuyTest(MyTestCase):
         items = seller.vending.filter(nameid=1201)
         self.assertEqual(items.count(), 0)
         self.assertEqual(seller.zeny, 3000)
+
+        self.assertTrue(VendingLog.objects.filter(buyer_id=1, seller_id=2, date__range=(before, after), **buy).exists())

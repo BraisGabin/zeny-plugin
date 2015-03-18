@@ -188,4 +188,26 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+        migrations.CreateModel(
+            name='VendingLog',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True)),
+                ('nameid', models.IntegerField()),
+                ('refine', models.IntegerField()),
+                ('card0', models.IntegerField()),
+                ('card1', models.IntegerField()),
+                ('card2', models.IntegerField()),
+                ('card3', models.IntegerField()),
+                ('amount', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive, django.core.validators.MaxValueValidator(30000)])),
+                ('zeny', models.PositiveIntegerField(validators=[zeny_plugin.app.models.strictly_positive, django.core.validators.MaxValueValidator(1000000000)])),
+                ('date', models.DateTimeField(auto_now_add=True)),
+                ('buyer', models.ForeignKey(related_name='shopping', db_column=b'buyer_account_id', to=settings.AUTH_USER_MODEL)),
+                ('seller', models.ForeignKey(related_name='sales', db_column=b'seller_account_id', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'db_table': 'vending_log',
+                'managed': False,
+            },
+            bases=(models.Model,),
+        ),
     ]

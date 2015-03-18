@@ -24,3 +24,19 @@ CREATE TABLE IF NOT EXISTS `zeny` (
   `zeny` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+
+CREATE TABLE IF NOT EXISTS `vending_log` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `nameid` smallint(5) unsigned NOT NULL default '0',
+  `refine` tinyint(3) unsigned NOT NULL default '0',
+  `card0` smallint(5) unsigned NOT NULL default '0',
+  `card1` smallint(5) unsigned NOT NULL default '0',
+  `card2` smallint(5) unsigned NOT NULL default '0',
+  `card3` smallint(5) unsigned NOT NULL default '0',
+  `amount` smallint(11) unsigned NOT NULL,
+  `zeny` int(11) unsigned NOT NULL,
+  `date` datetime NOT NULL,
+  `buyer_account_id` int(11) unsigned NOT NULL,
+  `seller_account_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;

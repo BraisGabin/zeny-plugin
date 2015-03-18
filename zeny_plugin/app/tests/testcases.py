@@ -23,6 +23,7 @@ class MyTestCase(AuthenticationMixin, APITestCase):
             TRUNCATE `storage`;
             TRUNCATE `storage_vending`;
             TRUNCATE `zeny`;
+            TRUNCATE `vending_log`;
             SET FOREIGN_KEY_CHECKS = 1;
             """)
         super(MyTestCase, self).tearDown()
