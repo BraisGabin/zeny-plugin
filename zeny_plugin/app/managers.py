@@ -1,7 +1,9 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.db import models
 
 from .exceptions import ConflictError
+from zeny_plugin.app import processes
 
 
 def relate_items_rows(rows, items):
@@ -23,6 +25,15 @@ def relate_items_rows(rows, items):
             raise TypeError("Unknown item")
         l.append(the_item)
     return l
+
+
+def get_no_merchantable_item_ids():
+    no_merchantable = cache.get("no_merchantable")
+    if no_merchantable is None:
+        # TODO multiple threads can enter here
+        no_merchantable = processes.get_no_merchantable_item_ids()
+        cache.set("no_merchantable", no_merchantable, 5 * 60)
+    return no_merchantable
 
 
 def check_no_char_online(cursor, user):
@@ -140,6 +151,8 @@ class BaseStorageManager(models.Manager):
     def _get_user_items(self, cursor, user, items):
         where, having, param_where, param_having = self._where_items_amount(items)
 
+        no_merchantable = get_no_merchantable_item_ids()
+
         sql = """
             SELECT
                 source.nameid,
@@ -168,11 +181,13 @@ class BaseStorageManager(models.Manager):
                 source.expire_time = 0 AND
                 source.identify != 0 AND
                 source.account_id = %s AND
+                source.nameid NOT IN (""" + ','.join(['%s'] * len(no_merchantable)) + """) AND
                 (""" + where + """)
             GROUP BY nameid, refine, card0, card1, card2, card3
             HAVING (""" + having + ")"
 
         parameters = [user.pk, user.pk]
+        parameters.extend(no_merchantable)
         parameters.extend(param_where)
         parameters.extend(param_having)
 
@@ -316,7 +331,7 @@ class BaseStorageManager(models.Manager):
 
 class StorageManager(BaseStorageManager):
     def get_queryset(self):
-        return super(StorageManager, self).get_queryset().filter(bound='0', expire_time='0', attribute='0')\
+        return super(StorageManager, self).get_queryset().filter(bound='0', expire_time='0', attribute='0') \
             .exclude(identify='0')
 
     def _add_no_stackable_item_vending_storage(self, cursor, user, item):

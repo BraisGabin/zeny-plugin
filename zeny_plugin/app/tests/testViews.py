@@ -329,6 +329,22 @@ class VendingNoLock(MyTestCase):
         response = self.client.post('/user/me/' + value, items, "json")
         self.assertEqual(response.status_code, 409)
 
+    @data('vending/', )
+    def test_post_no_merchantable_item(self, value):
+        items = [
+            {
+                "nameid": 7556,
+                "amount": 1,
+                "refine": 0,
+                "card0": 0,
+                "card1": 0,
+                "card2": 0,
+                "card3": 0,
+            }, ]
+        self.login()
+        response = self.client.post('/user/me/' + value, items, "json")
+        self.assertEqual(response.status_code, 409)
+
     @data('storage/', 'vending/', )
     def test_post_online(self, value):
         items = [

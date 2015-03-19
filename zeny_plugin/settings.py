@@ -103,6 +103,7 @@ MAX_ZENY = 1000000000
 MAX_STORAGE = 600
 MAX_AMOUNT = 30000
 MAX_FAME_LIST = 10
+PATH_ITEM_TRADE_TXT = './item_trade.txt'
 
 try:
     from .settings_local import *

@@ -160,3 +160,6 @@ REPLACE INTO `item_db_re` VALUES (10001,'Skull_Helm','Skull Helm',8,20,NULL,0,NU
 
 # Shadow Gears
 REPLACE INTO `item_db_re` VALUES (24001,'T_DEX1_Weapon_Shadow','T DEX1 Weapon Shadow',12,10,NULL,0,NULL,NULL,NULL,0,0xFFFFFFFF,63,2,131072,NULL,'1',NULL,NULL,'bonus bDex,1;',NULL,NULL);
+
+# No merchantable
+REPLACE INTO `item_db_re` VALUES (7556,'Longing_Heart','Longing Heart',3,0,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
