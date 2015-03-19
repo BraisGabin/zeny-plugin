@@ -15,6 +15,12 @@ class CharSerializer(serializers.ModelSerializer):
         fields = ('id', 'name',)
 
 
+class CharFameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Char
+        fields = ('id', 'name', 'fame')
+
+
 class MyCharSerializer(serializers.ModelSerializer):
     class Meta:
         model = Char

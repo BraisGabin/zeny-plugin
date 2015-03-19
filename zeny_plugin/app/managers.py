@@ -403,3 +403,17 @@ class VendingManager(BaseStorageManager):
         ])
         if cursor.rowcount != item['amount']:
             raise TypeError("Critical error, possible dupe")
+
+
+class CharManager(models.Manager):
+    blacksmith_jobs = [10, 4011, 4033, 4058, 4064, 4100]
+    alchemist_jobs = [18, 4019, 4041, 4071, 4078, 4107]
+
+    def blacksmith_fame(self):
+        return self.fame(self.blacksmith_jobs)
+
+    def alchemist_fame(self):
+        return self.fame(self.alchemist_jobs)
+
+    def fame(self, jobs):
+        return self.get_queryset().filter(job__in=jobs, fame__gt=0).order_by('-fame')[:settings.MAX_FAME_LIST]

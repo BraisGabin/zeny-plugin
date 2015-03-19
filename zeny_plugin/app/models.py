@@ -8,7 +8,7 @@ from django.utils.crypto import salted_hmac
 from rest_framework.exceptions import ValidationError
 
 from zeny_plugin.app.exceptions import ConflictError
-from zeny_plugin.app.managers import StorageManager, VendingManager
+from zeny_plugin.app.managers import StorageManager, VendingManager, CharManager
 
 
 # FIXME This is really ugly
@@ -285,6 +285,8 @@ class Char(models.Model):
     online = models.IntegerField(default=0)
     fame = models.IntegerField(default=0)
     delete_date = models.IntegerField(default=0)
+
+    objects = CharManager()
 
     class Meta:
         managed = False

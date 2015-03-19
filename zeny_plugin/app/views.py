@@ -1,5 +1,6 @@
 import itertools
 from django.core.exceptions import ObjectDoesNotExist
+from django.http.response import Http404
 
 from rest_framework import generics, serializers, mixins
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -13,7 +14,7 @@ from zeny_plugin.app.exceptions import ConflictError
 from zeny_plugin.app.models import Item
 from zeny_plugin.app.permissions import OnlyOwner, BuyOrOnlyOwner
 from zeny_plugin.app.serializers import VendingSerializer2, MyCharSerializer, CharSerializer, ZenySerializer, \
-    BuySerializer
+    BuySerializer, CharFameSerializer
 
 
 class UserDetail(UserMe, mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -59,6 +60,20 @@ class CharDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
         zeny = serializer.data['zeny']
         char.move_zeny(zeny)
         return Response(status=204)
+
+
+class FameList(mixins.ListModelMixin, generics.GenericAPIView):
+    serializer_class = CharFameSerializer
+
+    def get(self, request, *args, **kwargs):
+        fame = kwargs['fame']
+        if fame == 'blacksmith':
+            self.queryset = Char.objects.blacksmith_fame()
+        elif fame == 'alchemist':
+            self.queryset = Char.objects.alchemist_fame()
+        else:
+            raise Http404()
+        return self.list(self, request, *args, **kwargs)
 
 
 class StorageList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):

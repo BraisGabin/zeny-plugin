@@ -1,0 +1,168 @@
+[
+  {
+    "fields": {
+      "character_slots": 0,
+      "lastlogin": "1970-01-01T00:00:00Z",
+      "unban_time": 0,
+      "old_group": 0,
+      "last_ip": "",
+      "name": "s1",
+      "pincode": "",
+      "logincount": 0,
+      "sex": "S",
+      "state": 0,
+      "pincode_change": 0,
+      "birthdate": "1970-01-01",
+      "user_pass": "p1",
+      "expiration_time": 0,
+      "group_id": 0,
+      "email": "athena@athena.com",
+      "bank_vault": 0,
+      "vip_time": 0
+    },
+    "model": "app.user",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "alche1",
+      "job": 18,
+      "fame": 100
+    },
+    "model": "app.char",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "alche2",
+      "job": 4019,
+      "fame": 90
+    },
+    "model": "app.char",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "alche3",
+      "job": 4041,
+      "fame": 80
+    },
+    "model": "app.char",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "alche4",
+      "job": 4071,
+      "fame": 70
+    },
+    "model": "app.char",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "alche5",
+      "job": 4078,
+      "fame": 60
+    },
+    "model": "app.char",
+    "pk": 5
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "alche6",
+      "job": 4107,
+      "fame": 50
+    },
+    "model": "app.char",
+    "pk": 6
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "alche7",
+      "job": 4107,
+      "fame": 0
+    },
+    "model": "app.char",
+    "pk": 7
+  },
+
+
+  {
+    "fields": {
+      "account": 1,
+      "name": "bs1",
+      "job": 10,
+      "fame": 100
+    },
+    "model": "app.char",
+    "pk": 11
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "bs2",
+      "job": 4011,
+      "fame": 90
+    },
+    "model": "app.char",
+    "pk": 12
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "bs3",
+      "job": 4033,
+      "fame": 80
+    },
+    "model": "app.char",
+    "pk": 13
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "bs4",
+      "job": 4058,
+      "fame": 70
+    },
+    "model": "app.char",
+    "pk": 14
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "bs5",
+      "job": 4064,
+      "fame": 60
+    },
+    "model": "app.char",
+    "pk": 15
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "bs6",
+      "job": 4100,
+      "fame": 50
+    },
+    "model": "app.char",
+    "pk": 16
+  },
+  {
+    "fields": {
+      "account": 1,
+      "name": "bs7",
+      "job": 4100,
+      "fame": 0
+    },
+    "model": "app.char",
+    "pk": 17
+  }
+]
