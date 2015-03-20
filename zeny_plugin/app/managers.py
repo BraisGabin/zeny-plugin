@@ -180,6 +180,7 @@ class BaseStorageManager(models.Manager):
                 source.bound = 0 AND
                 source.expire_time = 0 AND
                 source.identify != 0 AND
+                source.attribute = 0 AND
                 source.account_id = %s AND
                 source.nameid NOT IN (""" + ','.join(['%s'] * len(no_merchantable)) + """) AND
                 (""" + where + """)
