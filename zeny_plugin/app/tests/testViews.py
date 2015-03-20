@@ -19,24 +19,24 @@ class UserSecurityAccess(MyTestCase):
         response = self.client.get('/user/me/' + value)
         self.assertEqual(response.status_code, 200)
 
-    @data('', 'storage/', 'vending/', )
+    @data('storage/', 'vending/', )
     def test_get_200_pk(self, value):
         self.login()
         response = self.client.get('/user/1/' + value)
         self.assertEqual(response.status_code, 200)
 
-    @data('', 'storage/', 'vending/', )
+    @data('storage/', 'vending/', )
     def test_get_403(self, value):
         self.login()
         response = self.client.get('/user/2/' + value)
         self.assertEqual(response.status_code, 403)
 
-    @data('', 'storage/', 'vending/', )
+    @data('storage/', 'vending/', )
     def test_get_401_me(self, value):
         response = self.client.get('/user/me/' + value)
         self.assertEqual(response.status_code, 401)
 
-    @data('', 'storage/', 'vending/', )
+    @data('storage/', 'vending/', )
     def test_get_401_pk(self, value):
         response = self.client.get('/user/1/' + value)
         self.assertEqual(response.status_code, 401)
@@ -118,6 +118,37 @@ class UserTest(MyTestCase):
                 }
             ],
         })
+
+    def test_get_200_pk(self):
+        self.login()
+        response = self.client.get('/user/1/')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEquals(content, {
+            "id": 1,
+            "name": 's1',
+            "zeny": 10000,
+            "chars": [
+                {
+                    "id": 150000,
+                    "name": 'spam',
+                    "zeny": 10000,
+                }
+            ],
+        })
+
+    def test_get_403(self):
+        self.login()
+        response = self.client.get('/user/2/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_401_me(self):
+        response = self.client.get('/user/me/')
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_401_pk(self):
+        response = self.client.get('/user/1/')
+        self.assertEqual(response.status_code, 401)
 
 
 class CharTest(MyTestCase):
