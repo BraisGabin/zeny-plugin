@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import datetime
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -39,6 +41,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'zeny_plugin.app',
     'oauth2_provider',
+    'axes',
 )
 
 REST_FRAMEWORK = {
@@ -57,6 +60,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.FailedLoginMiddleware',
 )
 
 ROOT_URLCONF = 'zeny_plugin.urls'
@@ -95,6 +99,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Axes settings
+
+AXES_LOGIN_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = datetime.timedelta(minutes=5)
 
 # Zeny settings
 

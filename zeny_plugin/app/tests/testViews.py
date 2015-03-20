@@ -393,6 +393,27 @@ class VendingNoLock(MyTestCase):
         self.assertEqual(response.status_code, 409)
 
 
+class Login(MyTestCase):
+    def test_login_throttling(self):
+        response = self.client.post('/accounts/login/', {"username": "s2", "password": "s2"}, "json")
+        self.assertTrue(response.content.startswith('<!DOCTYPE html>'))
+
+        response = self.client.post('/accounts/login/', {"username": "s2", "password": "s2"}, "json")
+        self.assertTrue(response.content.startswith('<!DOCTYPE html>'))
+
+        response = self.client.post('/accounts/login/', {"username": "s2", "password": "s2"}, "json")
+        self.assertTrue(response.content.startswith('<!DOCTYPE html>'))
+
+        response = self.client.post('/accounts/login/', {"username": "s2", "password": "s2"}, "json")
+        self.assertTrue(response.content.startswith('<!DOCTYPE html>'))
+
+        response = self.client.post('/accounts/login/', {"username": "s2", "password": "s2"}, "json")
+        self.assertTrue(response.content.startswith('<!DOCTYPE html>'))
+
+        response = self.client.post('/accounts/login/', {"username": "s2", "password": "s2"}, "json")
+        self.assertTrue(not response.content.startswith('<!DOCTYPE html>'))
+
+
 class ViewsMethods(unittest.TestCase):
     def test_check_no_repeated_item_ok(self):
         items = [
