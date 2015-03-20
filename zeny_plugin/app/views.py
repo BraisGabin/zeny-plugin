@@ -76,14 +76,14 @@ class FameList(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(self, request, *args, **kwargs)
 
 
-class StorageList(UserMe, mixins.ListModelMixin, generics.GenericAPIView):
+class StorageList(UserMe, generics.GenericAPIView):
     serializer_class = StorageSerializer
     permission_classes = (OnlyOwner,)
 
     def get(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        self.queryset = Storage.objects.filter(account_id=pk)
-        return self.list(request, *args, **kwargs)
+        user_id = self.kwargs.get('pk')
+        result = Storage.objects.get_storage(user_id)
+        return Response(result)
 
     def post(self, request, *args, **kwargs):
         self.serializer_class = StorageSerializer

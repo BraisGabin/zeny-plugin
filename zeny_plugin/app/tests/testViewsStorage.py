@@ -1,9 +1,108 @@
+import json
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.test.utils import override_settings
 
 from .testcases import MyTestCase
 from ..models import User
+
+
+class StorageGet(MyTestCase):
+    fixtures = ['user.json', 'items.json']
+
+    user_storage = [
+        {
+            "nameid": 501,
+            "amount": 5,
+            "refine": 0,
+            "card0": 0,
+            "card1": 0,
+            "card2": 0,
+            "card3": 0,
+        },
+        {
+            "nameid": 502,
+            "amount": 5,
+            "refine": 0,
+            "card0": 0,
+            "card1": 0,
+            "card2": 0,
+            "card3": 0,
+        },
+        {
+            "nameid": 503,
+            "amount": 5,
+            "refine": 0,
+            "card0": 0,
+            "card1": 0,
+            "card2": 0,
+            "card3": 0,
+        },
+        {
+            "nameid": 1101,
+            "amount": 1,
+            "refine": 0,
+            "card0": 0,
+            "card1": 0,
+            "card2": 0,
+            "card3": 0,
+        },
+        {
+            "nameid": 1201,
+            "amount": 3,
+            "refine": 0,
+            "card0": 0,
+            "card1": 0,
+            "card2": 0,
+            "card3": 0,
+        },
+        {
+            "nameid": 1202,
+            "amount": 3,
+            "refine": 0,
+            "card0": 0,
+            "card1": 0,
+            "card2": 0,
+            "card3": 0,
+        },
+        {
+            "nameid": 1203,
+            "amount": 3,
+            "refine": 0,
+            "card0": 0,
+            "card1": 0,
+            "card2": 0,
+            "card3": 0,
+        },
+    ]
+
+    def test_get_200_me(self):
+        self.login()
+        response = self.client.get('/user/me/storage/')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertItemsEqual(content, self.user_storage)
+
+    def test_get_200_pk(self):
+        self.login()
+        response = self.client.get('/user/1/storage/')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertItemsEqual(content, self.user_storage)
+
+    def test_get_403(self):
+        self.login()
+        response = self.client.get('/user/2/storage/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_401_me(self):
+        response = self.client.get('/user/me/storage/')
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_401_pk(self):
+        response = self.client.get('/user/1/storage/')
+        self.assertEqual(response.status_code, 401)
 
 
 class Storage(MyTestCase):

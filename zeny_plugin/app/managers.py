@@ -386,6 +386,49 @@ class StorageManager(BaseStorageManager):
     def destination_table(self):
         return 'storage_vending'
 
+    def get_storage(self, user_id):
+        from django.db import connection
+        cursor = connection.cursor()
+
+        no_merchantable = get_no_merchantable_item_ids()
+
+        sql = """
+            SELECT
+                source.nameid,
+                source.refine,
+                source.card0,
+                source.card1,
+                source.card2,
+                source.card3,
+                SUM(source.amount) AS total_amount
+            FROM storage AS source
+            WHERE
+                source.bound = 0 AND
+                source.expire_time = 0 AND
+                source.identify != 0 AND
+                source.attribute = 0 AND
+                source.account_id = %s AND
+                source.nameid NOT IN (""" + ','.join(['%s'] * len(no_merchantable)) + """)
+            GROUP BY nameid, refine, card0, card1, card2, card3
+            """
+
+        parameters = [user_id]
+        parameters.extend(no_merchantable)
+
+        cursor.execute(sql, parameters)
+        result_list = []
+        for row in cursor.fetchall():
+            result_list.append({
+                "nameid": row[0],
+                "refine": row[1],
+                "card0": row[2],
+                "card1": row[3],
+                "card2": row[4],
+                "card3": row[5],
+                "amount": row[6],
+            })
+        return result_list
+
 
 class VendingManager(BaseStorageManager):
     @property
